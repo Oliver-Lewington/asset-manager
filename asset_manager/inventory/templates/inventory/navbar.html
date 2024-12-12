@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url '' %}">        
+      <!-- <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Logo" width="36" height="30"> -->
+      <i class="bi bi-tools"></i> Asset Manager
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link active" href="{% url '' %}"><i class="bi bi-house me-1"></i> Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url '' %}"><i class="bi bi-box me-1"></i>Assets/Inventory</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url '' %}"><i class="bi bi-people me-1"></i>Customers</a></li>
+
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-1"></i>Sign Out</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-plus me-1"></i>Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

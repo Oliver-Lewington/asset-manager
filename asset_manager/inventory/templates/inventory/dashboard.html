@@ -1,7 +1,81 @@
-{% extends "webapp/base.html" %}
+{% extends "inventory/base.html" %}
 
 {% block content %}
 
-<!-- Write here -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="card bg-primary text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Assets</h5>
+                        <h2>120</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card bg-success text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Assets</h5>
+                        <h2>95</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card bg-warning text-dark mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Maintenance 1s</h5>
+                        <h2>15</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card bg-danger text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Decommissioned</h5>
+                        <h2>10</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Recent Asset Activity</div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Asset ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>001</td>
+                                    <td>Office Laptop</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>2024-12-10</td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>Printer</td>
+                                    <td><span class="badge bg-warning text-dark">Pending Maintenance</span></td>
+                                    <td>2024-12-09</td>
+                                </tr>
+                                <tr>
+                                    <td>003</td>
+                                    <td>Projector</td>
+                                    <td><span class="badge bg-danger">Decommissioned</span></td>
+                                    <td>2024-12-05</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 {% endblock %}
