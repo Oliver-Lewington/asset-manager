@@ -1,1 +1,6 @@
-ECHO is on.
+# Virtual environment folders
+venv/
+.venv/
+
+# Environment variables
+.env
