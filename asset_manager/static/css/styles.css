@@ -2,6 +2,16 @@
     width: 500px;
 }
 
-.message-text{
+.message-text {
     color: white;
+}
+
+.navbar-logo {
+    height: 50px;
+    width: auto; 
+    max-height: 75px;
+  }
+
+.brand-color{
+    color: #FF6D43;
 }
