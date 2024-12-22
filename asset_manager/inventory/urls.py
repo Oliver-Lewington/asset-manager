@@ -1,11 +1,15 @@
 from django.urls import path
-from . import views
+from .views.asset_views import assets
+from .views.dashboard_views import dashboard
+from .views.authentication_views import login, register, logout
+
 
 urlpatterns = [
-    path('', views.home, name=''),
-    path('assets/', views.assets, name='assets'),
-    path('customer/', views.customer, name='customer'),
+    path('', dashboard, name=''),
+    path('assets/', assets, name='view-assets'),
+    # path('customer/', x.customer, name='customer'),
 
-    path('login/', views.customer, name='login'),
-    path('register/', views.customer, name='register'),
+    path('login/', login, name='login'),
+    path('register/', register, name='register'),
+    path('logout/', logout, name='logout'),
 ]

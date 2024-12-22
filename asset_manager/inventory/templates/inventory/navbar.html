@@ -1,25 +1,49 @@
-{% load static %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+{% load static %} 
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url '' %}">        
+    <a class="navbar-brand" href="{% url '' %}">
       <img class="navbar-logo" src="{% static 'images/Logotype_Eviden_RGB_Orange.svg' %}" alt="Logo">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link active" href="{% url '' %}"><i class="brand-color bi bi-house-fill me-1"></i> Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url '' %}"><i class="brand-color bi bi-box-fill me-1"></i>Assets/Inventory</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url '' %}"><i class="brand-color bi bi-people-fill me-1"></i>Customers</a></li>
-
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url '' %}">
+            <i class="bi bi-house-door me-1"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url '' %}">
+            <i class="bi bi-box me-1"></i> Assets & Inventory
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url '' %}">
+            <i class="bi bi-people me-1"></i> Customers
+          </a>
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         {% if user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="brand-color bi bi-box-arrow-right me-1"></i>Sign Out</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+            </a>
+          </li>
         {% else %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="brand-color bi bi-box-arrow-in-right me-1"></i>Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}"><i class="brand-color bi bi-person-plus-fill me-1"></i>Register</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">
+              <i class="bi bi-person-plus me-1"></i> Register
+            </a>
+          </li>
         {% endif %}
       </ul>
     </div>

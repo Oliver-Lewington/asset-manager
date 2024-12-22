@@ -40,7 +40,12 @@ INSTALLED_APPS = [
     
     # Other apps…
     'inventory',
+    'crispy_forms', 'crispy_bootstrap5', # Django Forms Widget Pack.
 ]
+
+# Crispy Forms Setup
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
