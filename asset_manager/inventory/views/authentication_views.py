@@ -10,22 +10,27 @@ def authenticate_user(request, username, password):
     return authenticate(request, username=username, password=password)
 
 # Views
-
 def register(request):
     """
     Handle user registration.
     - Display a registration form.
     - Validate and save user data.
-    - Redirect to login upon successful registration.
+    - Log in the user after successful registration.
     """
+    # If the user is already logged in, redirect to dashboard or home
+    if request.user.is_authenticated:
+        messages.warning(request, "You have already logged in, redirecting you to the dashboard.")
+        return redirect('')  # Change 'dashboard' to the URL you want
+
     form = CreateUserForm()
 
     if request.method == "POST":
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()  # Save new user to the database
-            messages.success(request, "Account created successfully!")
-            return redirect('login')  # Redirect to login page
+            user = form.save()
+            auth_login(request, user)  # Log the user in after registration
+            messages.success(request, f"Welcome, {user.username.title()}!")
+            return redirect('')  # Redirect to dashboard after registration
 
     context = {'form': form}
     return render(request, 'inventory/register.html', context)
@@ -49,8 +54,8 @@ def login(request):
 
             if user is not None:
                 auth_login(request, user)  # Log the user in
-                messages.success(request, f"Welcome back, {username}!")
-                return redirect('')  # Redirect to dashboard
+                messages.success(request, f"Welcome back, {username.title()}!")
+                return redirect('')  # Redirect to the dashboard (or any page you want)
             else:
                 messages.error(request, "Invalid username or password.")
 

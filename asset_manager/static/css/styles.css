@@ -6,7 +6,8 @@
 /* Navbar Link Styling */
 .nav-link {
     color: inherit; /* Use parent element's text color by default */
-    transition: color 0.3s ease-in-out; /* Smooth color transition */
+    transition: color 0.5s ease-in-out; /* Smooth color transition */
+    font-weight: bold !important;
 }
 
 .nav-link:hover {
@@ -15,26 +16,23 @@
 
 /* Navbar Logo */
 .navbar-logo {
-    height: 50px !important;
-    width: auto !important;
-    max-height: 75px !important; /* Ensure responsive scaling */
+    height: 50px;
+    width: auto;
+    max-height: 75px; /* Ensure responsive scaling */
 }
 
 /* Brand Text */
 .text-brand {
-    color: var(--brand-color) !important;
-    font-weight: bold !important; /* Emphasize branding */
+    color: var(--brand-color);
+    font-weight: bold; /* Emphasize branding */
 }
 
 /* Form Layout */
 .form-layout {
     max-width: 500px;
-    margin: 0 auto !important; /* Center align the form */
+    margin: 0 auto; /* Center align the form */
     padding: 1rem;
 }
 
-/* Text Styling */
-.message-text {
-    color: #fff !important; /* Use shorthand for white */
-}
+
 

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Asset Manager</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Assets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Asset Status Chart -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5>Assets by Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="assetStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Type Chart -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5>Maintenance Types</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="maintenanceTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset List -->
+        <div class="card mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5>Asset List</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Asset Name</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Mock Asset Data -->
+                        <tr>
+                            <td>1</td>
+                            <td>Lenovo ThinkPad</td>
+                            <td>Laptop</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm">View Maintenance</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>iPhone 12</td>
+                            <td>Phone</td>
+                            <td><span class="badge bg-warning">Pending</span></td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm">View Maintenance</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Samsung Galaxy Tab</td>
+                            <td>Tablet</td>
+                            <td><span class="badge bg-danger">Decommissioned</span></td>
+                            <td>
+                                <a href="#" class="btn btn-info btn-sm">View Maintenance</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Asset Status Chart Data
+        const assetStatusData = {
+            labels: ['Active', 'Pending', 'Decommissioned'],
+            datasets: [{
+                label: 'Assets Count',
+                data: [5, 3, 1], // Mock data
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(255, 159, 64, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // Maintenance Type Chart Data
+        const maintenanceTypeData = {
+            labels: ['Repair', 'Software Update', 'Cleaning'],
+            datasets: [{
+                label: 'Maintenance Count',
+                data: [3, 2, 1], // Mock data
+                backgroundColor: [
+                    'rgba(255, 159, 64, 0.5)',
+                    'rgba(153, 102, 255, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(75, 192, 192, 1)',
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // Asset Status Chart
+        const ctx1 = document.getElementById('assetStatusChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: assetStatusData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Maintenance Type Chart
+        const ctx2 = document.getElementById('maintenanceTypeChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'pie',
+            data: maintenanceTypeData
+        });
+    </script>
+</body>
+</html>

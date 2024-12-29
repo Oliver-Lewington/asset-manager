@@ -21,16 +21,19 @@
         <!-- Create Navbar here -->
         {% include "inventory/navbar.html" %}
         
-        <div class="container">
-            <br>
-
+        <div class="container p-3">
             <!-- Notificaiton messages -->
             {% for message in messages %}
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <p id="message-timer" class="alert alert-success float-center text-center message-text">
+                    <h6 id="message-timer" class="alert alert-success float-center text-center message-text">
                         {{ message }}
-                    </p>
+                    </h6>
                 {% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                <h6 id="message-timer" class="alert alert-warning float-center text-center text-dark">
+                    Warning: {{ message }}
+                </h6>
+            {% endif %}
             {% endfor %}
 
             {% block content %}

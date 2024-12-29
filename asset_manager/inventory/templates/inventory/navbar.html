@@ -1,6 +1,6 @@
 {% load static %} 
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url '' %}">
       <img class="navbar-logo" src="{% static 'images/Logotype_Eviden_RGB_Orange.svg' %}" alt="Logo">
@@ -11,17 +11,17 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" href="{% url '' %}">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url '' %}">
             <i class="bi bi-house-door me-1"></i> Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url '' %}">
+          <a class="nav-link {% if request.path == '/assets/' %}active{% endif %}" href="{% url 'assets' %}">
             <i class="bi bi-box me-1"></i> Assets & Inventory
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url '' %}">
+          <a class="nav-link {% if request.path == '/customers/' %}active{% endif %}" href="{% url 'customers' %}">
             <i class="bi bi-people me-1"></i> Customers
           </a>
         </li>
@@ -29,18 +29,18 @@
       <ul class="navbar-nav ms-auto">
         {% if user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">
+            <a class="nav-link {% if request.path == '/logout/' %}active{% endif %}" href="{% url 'logout' %}">
               <i class="bi bi-box-arrow-right me-1"></i> Sign Out
             </a>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">
+            <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
               <i class="bi bi-box-arrow-in-right me-1"></i> Login
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">
+            <a class="nav-link {% if request.path == '/register/' %}active{% endif %}" href="{% url 'register' %}">
               <i class="bi bi-person-plus me-1"></i> Register
             </a>
           </li>

@@ -65,7 +65,6 @@ class AssignmentHistory(models.Model):
     def __str__(self):
         return f"{self.asset.name} -> {self.customer.name}"
 
-
 class MaintenanceHistory(models.Model):
     """
     Tracks maintenance activities performed on assets.
