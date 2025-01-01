@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from ..forms import LoginForm, CreateUserForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
+
+from ..forms.authentication_forms import LoginForm, CreateUserForm
 
 # Helper Functions
 
@@ -9,7 +10,6 @@ def authenticate_user(request, username, password):
     """Authenticate a user with the given username and password."""
     return authenticate(request, username=username, password=password)
 
-# Views
 def register(request):
     """
     Handle user registration.
@@ -33,7 +33,7 @@ def register(request):
             return redirect('')  # Redirect to dashboard after registration
 
     context = {'form': form}
-    return render(request, 'inventory/register.html', context)
+    return render(request, 'inventory/authentication/register.html', context)
 
 def login(request):
     """
@@ -60,7 +60,7 @@ def login(request):
                 messages.error(request, "Invalid username or password.")
 
     context = {'form': form}
-    return render(request, 'inventory/login.html', context)
+    return render(request, 'inventory/authentication/login.html', context)
 
 def logout(request):
     """

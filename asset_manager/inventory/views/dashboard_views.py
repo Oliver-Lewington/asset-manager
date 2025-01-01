@@ -6,7 +6,7 @@ from ..models import Asset
 from .helpers import get_asset_counts, get_monthly_asset_data, get_recent_assets
 
 # - Dashboard
-@login_required(login_url='login')
+@login_required(login_url='login/')
 def dashboard(request):
     today = timezone.now().date()
     start_of_month = today.replace(day=1)
@@ -14,7 +14,7 @@ def dashboard(request):
     # Get data using helper functions
     total_assets, active_assets, maintenance_assets, decommissioned_assets = get_asset_counts()
     months, active_assets_month, maintenance_assets_month, decommissioned_assets_month = get_monthly_asset_data(start_of_month)
-    recent_assets = get_recent_assets(start_of_month)
+    recent_assets = get_recent_assets()
 
     # Prepare context for the template
     context = {

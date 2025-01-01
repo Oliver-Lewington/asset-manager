@@ -6,4 +6,4 @@ from ..models import Customer
 @login_required(login_url='login')
 def customers(request):
     customers = Customer.objects.all()
-    return render(request, 'inventory/view-customer.html', {'customers': customers})
+    return render(request, 'inventory/customer/view-customer.html', {'customers': customers})

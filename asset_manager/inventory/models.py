@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from datetime import date
 
-
 class Customer(models.Model):
     name = models.CharField(max_length=200, null=True)
     phone_number = models.CharField(
@@ -62,7 +61,7 @@ class AssignmentHistory(models.Model):
     date_assigned = models.DateTimeField(auto_now_add=True)
     date_returned = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
+def __str__(self):
         return f"{self.asset.name} -> {self.customer.name}"
 
 class MaintenanceHistory(models.Model):

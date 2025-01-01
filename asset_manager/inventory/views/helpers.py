@@ -1,5 +1,8 @@
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
+
+from datetime import datetime, timedelta
+
 from ..models import Asset
 
 def get_asset_counts():
@@ -40,6 +43,13 @@ def get_monthly_asset_data(start_of_month):
 
     return months, active_assets_month, maintenance_assets_month, decommissioned_assets_month
 
-def get_recent_assets(start_of_month):
+def get_recent_assets():
     """Returns assets updated recently."""
-    return Asset.objects.filter(date_assigned__gte=start_of_month).order_by('-date_assigned')#[:5]
+    # Get today's date
+    today = datetime.today()
+
+    # Calculate the date one month ago
+    one_month_ago = today - timedelta(days=30)
+
+    # Filter assets assigned in the past month
+    return Asset.objects.filter(date_assigned__gte=one_month_ago).order_by('-date_assigned')
