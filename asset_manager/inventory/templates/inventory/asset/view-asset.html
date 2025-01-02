@@ -59,7 +59,7 @@
             <div class="row mb-4">
                 <div class="col-12 d-flex justify-content-between align-items-center border-bottom">
                     <h5 class="pb-2 mb-0">Maintenance History</h5>
-                    <a href="{% url '' %}" class="btn btn-sm btn-outline-success mb-3">
+                    <a href="{% url 'create-maintenance' asset.id %}" class="btn btn-sm btn-outline-success mb-3">
                         <i class="bi bi-plus-circle "></i> Add Maintenance
                     </a>
                 </div>
@@ -73,7 +73,6 @@
                                 <th>Type</th>
                                 <th>Date</th>
                                 <th>Performed By</th>
-                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -84,19 +83,16 @@
                                 <td>{{ maintenance.maintenance_type }}</td>
                                 <td>{{ maintenance.date_maintained|date:"M d, Y" }}</td>
                                 <td>{{ maintenance.performed_by.username|default:"N/A" }}</td>
-                                <td>
-                                    <span class="badge {% if maintenance.status_after == 'Active' %}bg-primary{% else %}bg-warning{% endif %}">
-                                        {{ maintenance.status_after }}
-                                    </span>
-                                </td>
                                 <td class="text-center">
-                                    <i class="bi bi-pencil-square text-primary" style="cursor: pointer;"></i>
-                                    <form method="POST" action="{% url 'delete-asset' maintenance.id %}" onsubmit="return confirm('Are you sure you would like to delete this asset?');" style="display: inline;">
+                                    <a href="{% url 'update-maintenance' maintenance.id %}"><i class="bi bi-pencil-square text-primary" style="cursor: pointer;"></i></a>
+                                    {% if user.is_staff %}
+                                    <form method="POST" action="{% url 'delete-maintenance' maintenance.id %}" onsubmit="showConfirmation(event)" style="display: inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-link p-0 m-0 text-danger border-0">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -112,10 +108,12 @@
 
         <div class="card-footer d-flex justify-content-end gap-2">
             <a href="{% url 'update-asset' asset.id %}" class="btn btn-outline-primary btn-sm">Edit Asset</a>
+            {% if user.is_staff %}
             <form method="POST" action="{% url 'delete-asset' asset.id %}" onsubmit="showConfirmation(event)">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-danger btn-sm">Delete Asset</button>
             </form>
+            {% endif %}
         </div>
     </div>
 </div>

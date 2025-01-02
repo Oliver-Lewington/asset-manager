@@ -50,7 +50,6 @@ class Asset(models.Model):
     def __str__(self):
         return self.name
 
-
 class AssignmentHistory(models.Model):
     """
     Tracks which customer is assigned to an asset and when it was assigned/returned.
@@ -61,8 +60,8 @@ class AssignmentHistory(models.Model):
     date_assigned = models.DateTimeField(auto_now_add=True)
     date_returned = models.DateTimeField(null=True, blank=True)
 
-def __str__(self):
-        return f"{self.asset.name} -> {self.customer.name}"
+    def __str__(self):
+            return f"{self.asset.name} -> {self.customer.name}"
 
 class MaintenanceHistory(models.Model):
     """
@@ -79,11 +78,6 @@ class MaintenanceHistory(models.Model):
     maintenance_type = models.CharField(max_length=50, choices=MaintenanceType.choices, null=False)
     description = models.TextField(null=True, blank=True)  # Optional notes about the maintenance
     date_maintained = models.DateTimeField(auto_now_add=True)
-    status_after = models.CharField(
-        max_length=20,
-        choices=Asset.StatusChoices.choices,
-        default=Asset.StatusChoices.ACTIVE,
-    )
 
     def __str__(self):
         return f"Maintenance: {self.asset.name} ({self.maintenance_type})"

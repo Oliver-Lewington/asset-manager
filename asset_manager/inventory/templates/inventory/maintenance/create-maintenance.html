@@ -6,8 +6,8 @@
     <body>
         <!-- Form container -->
         <div class="container shadow p-4 bg-body-tertiary rounded w-50 overflow-x-auto"> 
-            <h3 class="text-center">Update Asset</h3>
-            <h6>Update your asset's details below.</h6>
+            <h3 class="text-center">Create Maintenance for {{ asset.name }}</h3>
+            <h6>Start adding in the required details for your this assets maintenance record.</h6>
 
             <hr>
 
@@ -16,9 +16,8 @@
                 {% csrf_token %}
                 {{ form|crispy }}
                     
-                <!-- Correct the href to pass the asset_id dynamically -->
                 <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.history.back()">Cancel</button>
-                <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>              
+                <button type="submit" class="btn btn-outline-primary btn-sm">Create Maintenance</button>              
             </form>
         </div>
     </body>

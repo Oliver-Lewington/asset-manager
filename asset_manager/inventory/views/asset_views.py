@@ -4,35 +4,39 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
-from datetime import date
-
+from ..utils.asset_utils import get_filtered_assets, get_asset_metrics
 from ..models import Asset, MaintenanceHistory
-from ..forms.asset_forms import AssetForm, CreateAssetForm, UpdateAssetForm
+from ..forms.asset_forms import AssetForm
 
-# - View all record
+# View all records
 @login_required(login_url='login')
 def view_assets(request):
-    search_query = request.GET.get('search', '')  
+    """
+    Displays all assets with pagination and search functionality.
+    Handles both AJAX and regular requests.
+    """
+    search_query = request.GET.get('search', '')  # Get search query from URL params
 
-    # Filter assets based on the search query
-    assets = Asset.objects.filter(name__icontains=search_query) if search_query else Asset.objects.all()
-    
+    # Get filtered assets based on search query
+    assets = get_filtered_assets(search_query)
+
     # Pagination: Show 5 assets per page
     paginator = Paginator(assets.order_by('-date_assigned'), 5)
-    page_number = request.GET.get('page')  
+    page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Determine if pagination is necessary
+    # Check if pagination is needed
     show_pagination = paginator.num_pages > 1
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Check for AJAX requests
-        # Return JSON for real-time search
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Handle AJAX requests
+        # Prepare asset data for AJAX response
         asset_data = [{
             'id': asset.id,
             'name': asset.name,
             'status': asset.status,
             'warranty': 'Valid' if asset.is_warranty_pending else 'Expired',
         } for asset in page_obj.object_list]
+
         return JsonResponse({
             'assets': asset_data,
             'has_next': page_obj.has_next(),
@@ -40,31 +44,29 @@ def view_assets(request):
             'num_pages': paginator.num_pages,
         })
 
-    # Quick info metrics
-    active_assets = assets.filter(status=Asset.StatusChoices.ACTIVE).count()
-    maintenance_assets = assets.filter(status=Asset.StatusChoices.PENDING_MAINTENANCE).count()
-    decommissioned_assets = assets.filter(status=Asset.StatusChoices.DECOMMISSIONED).count()
-    assets_under_warranty = assets.filter(warranty_expiry__gte=date.today()).count()
-    assets_out_of_warranty = assets.filter(warranty_expiry__lt=date.today()).count()
+    # Calculate quick info metrics
+    asset_metrics = get_asset_metrics(assets)
 
     context = {
         'page_obj': page_obj,
         'show_pagination': show_pagination,
         'assets_count': assets.count(),
-        'active_assets': active_assets,
-        'maintenance_assets': maintenance_assets,
-        'decommissioned_assets': decommissioned_assets,
-        'assets_under_warranty': assets_under_warranty,
-        'assets_out_of_warranty': assets_out_of_warranty,
+        **asset_metrics,  # Add asset metrics to context
         'search_query': search_query,
     }
+
     return render(request, 'inventory/asset/assets.html', context)
 
-# - View a record
+
+# View a single asset record
 @login_required(login_url='login')
 def view_asset(request, asset_id):
+    """
+    Displays detailed information for a single asset, including maintenance history.
+    Allows for editing or deletion of the asset.
+    """
     asset = get_object_or_404(Asset, id=asset_id)
-    
+
     # Fetch maintenance history related to the asset
     maintenance_history = MaintenanceHistory.objects.filter(asset=asset).order_by('-date_maintained')
 
@@ -72,7 +74,7 @@ def view_asset(request, asset_id):
     if request.method == 'POST' and 'delete_asset' in request.POST:
         asset.delete()
         messages.success(request, 'Asset deleted successfully.')
-        return redirect('asset_list')  # Redirect to your asset list view after deletion
+        return redirect('asset_list')  # Redirect to asset list view after deletion
 
     # Handle asset edit
     if request.method == 'POST' and 'edit_asset' in request.POST:
@@ -90,46 +92,54 @@ def view_asset(request, asset_id):
         'form': form,
     })
 
-# - Create a record
+
+# Create a new asset
 @login_required(login_url='login')
 def create_asset(request):
-    form = CreateAssetForm()
+    """
+    Displays the form to create a new asset. On form submission, saves the asset.
+    """
+    form = AssetForm()
 
     if request.method == "POST":
-        form = CreateAssetForm(request.POST)
+        form = AssetForm(request.POST)
 
         if form.is_valid():
             form.save()
             messages.success(request, "Your Asset has been created successfully.")
             return redirect('view-assets')
-        
-    context = { 'form':form }
 
-    return render(request, 'inventory/asset/create-asset.html', context = context)
+    return render(request, 'inventory/asset/create-asset.html', {'form': form})
 
-# - Update a record
-login_required(login_url='login')
+
+# Update an existing asset
+@login_required(login_url='login')
 def update_asset(request, asset_id):
+    """
+    Displays the form to update an existing asset. Saves changes upon form submission.
+    """
     asset = get_object_or_404(Asset, id=asset_id)
-    
-    # Handle maintenance edit
+
     if request.method == 'POST':
-        form = UpdateAssetForm(request.POST, instance=asset)
+        form = AssetForm(request.POST, instance=asset)
         if form.is_valid():
             form.save()
             messages.success(request, 'Asset record updated successfully.')
             return redirect('view-asset', asset_id=asset_id)
     else:
-        form = UpdateAssetForm(instance=asset)
+        form = AssetForm(instance=asset)
 
     return render(request, 'inventory/asset/update-asset.html', {'form': form})
 
-# - Update a record
+
+# Delete an asset
 @login_required(login_url='login')
 def delete_asset(request, asset_id):
+    """
+    Deletes an asset and redirects to the asset list page.
+    """
     asset = get_object_or_404(Asset, id=asset_id)
     asset.delete()
 
-    messages.success(request, F'Asset record deleted successfully.')
-    
+    messages.success(request, 'Asset record deleted successfully.')
     return redirect('view-assets')
