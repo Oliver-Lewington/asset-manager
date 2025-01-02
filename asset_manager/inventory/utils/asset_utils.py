@@ -1,4 +1,4 @@
-from django.core.paginator import Paginator
+from django.shortcuts import redirect
 
 from ..models import Asset
 from datetime import date
@@ -29,3 +29,15 @@ def get_asset_metrics(assets):
         'assets_out_of_warranty': assets_out_of_warranty
     }
 
+from django.shortcuts import redirect
+
+def redirect_when_next(request, default_url='/', **kwargs):
+    """
+    Handles redirection based on the 'next' parameter, and allows dynamic URL parameters like asset_id or customer_id.
+    """
+    next_url = request.GET.get('next', default_url)  # Default to the given default_url if 'next' is not provided
+    
+    # Dynamically build the URL with the passed keyword arguments (e.g., asset_id or customer_id)
+    if kwargs:
+        return redirect(next_url, **kwargs)
+    return redirect(next_url)

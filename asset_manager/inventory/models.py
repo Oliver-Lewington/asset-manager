@@ -28,6 +28,7 @@ class Asset(models.Model):
         DECOMMISSIONED = 'Decommissioned', 'Decommissioned'
 
     name = models.CharField(max_length=200, null=True)
+    assigned_to = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name="assignment")
     warranty_expiry = models.DateField(null=True, blank=True)
     status = models.CharField(
         max_length=20,
@@ -35,7 +36,7 @@ class Asset(models.Model):
         default=StatusChoices.ACTIVE,
         null=False
     )
-    description = models.CharField(max_length=200, null=True, blank=True)
+    description = models.CharField(max_length=450, null=True, blank=True)
     date_assigned = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -49,19 +50,6 @@ class Asset(models.Model):
 
     def __str__(self):
         return self.name
-
-class AssignmentHistory(models.Model):
-    """
-    Tracks which customer is assigned to an asset and when it was assigned/returned.
-    """
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name="assignments")
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="assignments")
-    assigned_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # OSS team member
-    date_assigned = models.DateTimeField(auto_now_add=True)
-    date_returned = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-            return f"{self.asset.name} -> {self.customer.name}"
 
 class MaintenanceHistory(models.Model):
     """

@@ -7,7 +7,7 @@ class AssetForm(forms.ModelForm):
     """
     class Meta:
         model = Asset
-        fields = ['name', 'warranty_expiry', 'status', 'description']
+        fields = ['name', 'assigned_to', 'warranty_expiry', 'status', 'description']
 
     # Define form fields with custom attributes directly
     name = forms.CharField(

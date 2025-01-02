@@ -1,118 +1,109 @@
 {% extends "inventory/base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row mb-4">
-        <!-- User Contact Info -->
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5>User Contact Info</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Name:</strong> John Doe</p>
-                    <p><strong>Email:</strong> john.doe@example.com</p>
-                    <p><strong>Phone:</strong> +1234567890</p>
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-warning btn-sm me-2">Update Info</button>
-                        <button class="btn btn-danger btn-sm">Remove User</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Assets Box with Chart -->
-        <div class="col-lg-6">
-            <div class="card text-center h-100">
-                <div class="card-header bg-success text-white">
-                    <h5>Total Assets</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="assetsChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Asset List with Search -->
-    <div class="card">
-        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-            <h5>Assigned Assets</h5>
-            <input type="text" class="form-control form-control-sm w-25" placeholder="Search Assets...">
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-secondary text-white d-flex align-items-center">
+            <a class="text-white me-3"href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'view-customers' %}{% endif %}" style="font-size: 1.5rem; font-weight: bold;">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <h4 class="mb-0">Customer Overview</h4>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Asset Name</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Lenovo ThinkPad</td>
-                        <td>Laptop</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-info btn-sm">View</button>
-                            <button class="btn btn-danger btn-sm">Remove</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>iPhone 12</td>
-                        <td>Phone</td>
-                        <td><span class="badge bg-warning">Pending</span></td>
-                        <td>
-                            <button class="btn btn-info btn-sm">View</button>
-                            <button class="btn btn-danger btn-sm">Remove</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Customer Overview Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="border-bottom pb-2">Customer Details</h5>
+                </div>
+                <div class="col-md-6">
+                    <strong>Name:</strong>
+                    <p>{{ customer.name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Email:</strong>
+                    <p>
+                        <a href="mailto:{{ customer.email }}">{{ customer.email }}</a>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Phone Number:</strong>
+                    <p>{{ customer.phone_number|default:"No phone number provided" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Date Joined:</strong>
+                    <p>{{ customer.date_joined|date:"F jS, Y" }}</p>
+                </div>
+            </div>
+
+            <!-- Assigned Assets Section -->
+            <div class="row mb-4">
+                <div class="col-12 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="pb-2 mb-0">Assigned Assets</h5>
+                </div>
+
+                {% if customer.assignment.exists %}
+                <div class="col-12">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Asset Name</th>
+                                <th>Status</th>
+                                <th>Warranty Expiry</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asset in customer.assignment.all %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ asset.name }}</td>
+                                <td>
+                                    <span class="badge {% if asset.status == 'Active' %}bg-success{% elif asset.status == 'Pending Maintenance' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        <i class="pe-1 bi {% if asset.status == 'Active' %}bi-check-circle{% elif asset.status == 'Pending Maintenance' %}bi-exclamation-circle{% else %}bi-x-circle{% endif %}"></i>
+                                        {{ asset.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if asset.warranty_expiry %}
+                                    {{ asset.warranty_expiry|date:"F jS, Y" }}
+                                    {% else %}
+                                    <span class="text-muted">No warranty information</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'view-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-eye text-secondary" style="cursor: pointer;"></i></a>
+                                    <a href="{% url 'update-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-pencil-square text-primary" style="cursor: pointer;"></i></a>
+                                    {% if user.is_staff %}
+                                    <form method="POST" action="{% url 'delete-asset' asset.id %}?next={{ request.path }}" onsubmit="showConfirmation(event)" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-link p-0 m-0 text-danger border-0">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <p class="ps-1 text-muted">No assets assigned to this customer.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end gap-2">
+            <a href="{% url 'update-customer' customer.id %}" class="btn btn-outline-primary btn-sm">Edit Customer</a>
+            {% if user.is_staff %}
+            <form method="POST" action="{% url 'delete-customer' customer.id %}" onsubmit="showConfirmation(event)">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm">Delete Customer</button>
+            </form>
+            {% endif %}
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-    // Chart.js initialization
-    const ctx = document.getElementById('assetsChart').getContext('2d');
-    const assetsChart = new Chart(ctx, {
-        type: 'bar', // Chart type (bar, line, pie, etc.)
-        data: {
-            labels: ['Laptops', 'Phones', 'Tablets', 'Others'], // Example categories
-            datasets: [{
-                label: '# of Assets',
-                data: [8, 5, 2, 0], // Example data
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 99, 132, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 99, 132, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-</script>
 {% endblock %}
