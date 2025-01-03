@@ -55,164 +55,110 @@
             </a>
         </div>
 
-    <!-- Asset Table -->
-    <div class="card">
-        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-            <h5>Assets List</h5>
-            <!-- Real-time Search Box in Header -->
-            <input type="text" id="searchBox" class="form-control w-25" placeholder="Search Assets...">
-        </div>
-        <div class="card-body">
-            <!-- Add table-responsive to make the table scrollable on small screens -->
-            <div class="table-responsive">
-                <!-- Table for displaying results -->
-                <table class="table table-striped" id="assetTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Asset Name</th>
-                            <th>Status</th>
-                            <th>Warranty</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for asset in page_obj.object_list %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td class="wrapped-column">{{ asset.name }}</td>
-                            <td>
-                                <span class="badge {% if asset.status == 'Active' %}bg-success{% elif asset.status == 'Pending Maintenance' %}bg-warning{% else %}bg-danger{% endif %}">
-                                    <i class="bi {% if asset.status == 'Active' %}bi-check-circle{% elif asset.status == 'Pending Maintenance' %}bi-exclamation-circle{% else %}bi-x-circle{% endif %}"></i>
-                                    {{ asset.status }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if asset.warranty_expiry %}
-                                    {% if asset.is_warranty_pending %}
-                                        <span class="badge bg-success"><i class="bi bi-shield-check"></i> Valid</span>
-                                    {% else %}
-                                        <span class="badge bg-danger"><i class="bi bi-shield-x"></i> Expired</span>
-                                    {% endif %}
-                                {% else %}
-                                    <span class="badge bg-dark"><i class="bi bi-shield-exclamation"></i> N/A</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                <a href="{% url 'view-asset' asset.id %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <!-- Asset Table -->
+        <div class="card">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h5>Assets List</h5>
+                <!-- Search Box in Header -->
+                <form method="get" class="d-flex w-25">
+                    <div class="input-group w-100">
+                        <!-- Search Box with Reset Button Inside -->
+                        <input type="text" name="search" class="form-control" placeholder="Search Assets..." value="{{ search_query }}">
+                    
+                        <!-- Reset Button inside the Input Box -->
+                        <button type="reset" class="btn btn-danger input-group-text" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click to clear search." onclick="window.location.href = '{% url 'view-assets' %}';">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
 
-            <!-- Alert message for no results -->
-            <div id="noResultsAlert" class="alert alert-danger text-center" style="display: none;">
-                No assets found.
+                        <!-- Search Button -->
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click to search.">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
-        </div>
-
-        
-            
+            <div class="card-body">
+                <!-- table-responsive class makes the table scrollable on small screens -->
+                 {% if page_obj.object_list %}
+                    <div class="table-responsive">
+                        <!-- Table for displaying results -->
+                        <table class="table table-striped" id="assetTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Asset Name</th>
+                                    <th>Status</th>
+                                    <th>Warranty</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asset in page_obj.object_list %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="wrapped-column">{{ asset.name }}</td>
+                                    <td>
+                                        <span class="badge {% if asset.status == 'Active' %}bg-success{% elif asset.status == 'Pending Maintenance' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            <i class="bi {% if asset.status == 'Active' %}bi-check-circle{% elif asset.status == 'Pending Maintenance' %}bi-exclamation-circle{% else %}bi-x-circle{% endif %}"></i>
+                                            {{ asset.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if asset.warranty_expiry %}
+                                            {% if asset.is_warranty_pending %}
+                                                <span class="badge bg-success"><i class="bi bi-shield-check"></i> Valid</span>
+                                            {% else %}
+                                                <span class="badge bg-danger"><i class="bi bi-shield-x"></i> Expired</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-dark"><i class="bi bi-shield-exclamation"></i> N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'view-asset' asset.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <!-- Alert message for no results -->
+                    <div class="alert alert-danger text-center">
+                        No assets found.
+                    </div>
+                {% endif %}      
+            </div>
             <div class="card-footer d-flex align-items-center">
                 <nav class="w-100">
                     {% if show_pagination %}
-                    <ul class="pagination justify-content-center mb-0">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-                        {% endif %}
-                        {% for num in page_obj.paginator.page_range %}
-                            <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endfor %}
-                        {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                        {% endif %}
-                    </ul>
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}">Previous</a></li>
+                            {% endif %}
+                            {% for num in page_obj.paginator.page_range %}
+                                <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ num }}&search={{ search_query }}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}">Next</a></li>
+                            {% endif %}
+                        </ul>
                     {% endif %}
                 </nav>
-            </div>               
+            </div>
         </div>
     </div>
 
     <script>
-        // Real-Time Search
-        document.getElementById('searchBox').addEventListener('input', function() {
-            const query = this.value;
-            fetch(`/assets/?search=${query}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('#assetTable tbody');
-                const alertBox = document.getElementById('noResultsAlert');
-
-                tableBody.innerHTML = ''; // Clear current table rows
-
-                if (data.assets.length > 0) {
-                    // Hide the "No results" message
-                    alertBox.style.display = 'none';
-
-                    // Populate the table with results
-                    data.assets.forEach((asset, index) => {
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${asset.name}</td>
-                            <td>
-                                <span class="badge ${
-                                    asset.status === 'Active' ? 'bg-success' :
-                                    asset.status === 'Pending Maintenance' ? 'bg-warning' : 'bg-danger'
-                                }">
-                                    <i class="bi ${
-                                        asset.status === 'Active' ? 'bi-check-circle' :
-                                        asset.status === 'Pending Maintenance' ? 'bi-exclamation-circle' : 'bi-x-circle'
-                                    }"></i>
-                                    ${asset.status}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge ${
-                                    asset.warranty === 'Valid' ? 'bg-success' : 'bg-danger'
-                                }">
-                                    <i class="bi ${asset.warranty === 'Valid' ? 'bi-shield-check' : 'bi-shield-x'}"></i>
-                                    ${asset.warranty === 'Valid' ? 'Valid' : 'Expired'}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <a href="/assets/${asset.id}/" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                } else {
-                    // Show the "No results" message
-                    alertBox.style.display = 'block';
-                }
-
-                // Hide or show paginator based on results
-                const paginator = document.querySelector('.pagination');
-                if (data.num_pages <= 1) {
-                    paginator.style.display = 'none';
-                } else {
-                    paginator.style.display = 'flex';
-                }
-            });
-        });
-    </script>
-
-    <script>
-        const warrantyStatusLabels = ['Under Warranty', 'Warranty Expired'];
+        const warrantyStatusLabels = ['Under Warranty', 'Warranty Expired', 'N/A'];
         
         const assetsUnderWarranty = {{ assets_under_warranty }};
         const assetsOutOfWarranty = {{ assets_out_of_warranty }};
+        const assetsNotApplicable = {{ assets_not_applicable }};
     </script> 
 
     <script src="{% static 'js/charts/asset-charts.js' %}"></script>

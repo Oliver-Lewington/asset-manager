@@ -1,7 +1,8 @@
 from datetime import timedelta, date, datetime
+
 from django.utils import timezone
+from django.db.models import Count, Q
 from django.shortcuts import redirect, get_object_or_404
-from django.db.models import Count
 
 from .models import Asset, Customer, MaintenanceHistory
 
@@ -33,9 +34,19 @@ def get_asset_metrics(assets):
         'decommissioned_assets': assets.filter(status=Asset.StatusChoices.DECOMMISSIONED).count(),
         'assets_under_warranty': assets.filter(warranty_expiry__gte=date.today()).count(),
         'assets_out_of_warranty': assets.filter(warranty_expiry__lt=date.today()).count(),
+        'assets_not_applicable': assets.filter(warranty_expiry__isnull=True).count(),
     }
     return metrics
 
+def get_asset_assignments():
+    # Assigned and unassigned assets metrics
+    assigned_assets = Asset.objects.filter(assigned_to__isnull=False).count()
+    unassigned_assets = Asset.objects.filter(assigned_to__isnull=True).count()
+
+    return {
+        'assigned_assets': assigned_assets,
+        'unassigned_assets': unassigned_assets,
+    }
 
 def get_asset_counts():
     """
@@ -87,7 +98,7 @@ def get_recent_assets(number_of_days):
     Returns a list of assets assigned within the past month, ordered by the most recent first.
     """
     one_month_ago = datetime.today() - timedelta(days=number_of_days)  # Set the range to the last month
-    return Asset.objects.filter(date_assigned__gte=one_month_ago).order_by('-date_assigned')
+    return Asset.objects.filter(date_assigned__gte=one_month_ago).order_by('-last_updated')
 
 
 def get_asset_types():
@@ -119,6 +130,28 @@ def get_maintenance_by_id(maintenance_id):
     """
     return get_object_or_404(MaintenanceHistory, id=maintenance_id)
 
+# --- Customer-related Functions ---
+def get_filtered_customers(search_query):
+    """Filters customers based on search query."""
+    if search_query:
+        return Customer.objects.filter(
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone_number__icontains=search_query)
+        )
+    return Customer.objects.all()
+
+def get_customer_metrics(customers):
+    """Calculates quick info metrics for customers."""
+    total_customers = customers.count()
+    customers_with_assets = customers.annotate(asset_count=Count('assignment')).filter(asset_count__gt=0).count()
+    customers_without_assets = total_customers - customers_with_assets
+
+    return {
+        'total_customers': total_customers,
+        'customers_with_assets': customers_with_assets,
+        'customers_without_assets': customers_without_assets,
+    }
 
 # --- Redirection Helper Functions ---
 def redirect_when_next(request, default_url='/', **kwargs):

@@ -1,77 +1,46 @@
-from django.http import JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 
 from ..models import Asset, Customer
 from ..forms.customer_forms import CustomerForm
-from ..utils import redirect_when_next
+from ..utils import redirect_when_next, get_filtered_customers, get_customer_metrics, get_asset_assignments
 
 # View all records
 @login_required(login_url='login')
 def view_customers(request):
     """
     Displays all customers with pagination and search functionality.
-    Handles both AJAX and regular requests.
+    Handles both regular requests.
     """
+    search_query = request.GET.get('search', '')  # Get search query from URL params
 
-    search_query = request.GET.get('search', '')
-
-    # Filter customers based on search query
-    customers = Customer.objects.filter(
-        Q(name__icontains=search_query) |
-        Q(email__icontains=search_query) |
-        Q(phone_number__icontains=search_query)
-    )
+    # Get filtered customers based on search query
+    customers = get_filtered_customers(search_query)
 
     # Pagination: Show 5 customers per page
     paginator = Paginator(customers.order_by('-date_joined'), 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    show_pagination = paginator.num_pages > 1
 
-    # Check if pagination is needed
-    show_pagination = paginator.num_pages > 1
+    # Calculate quick info metrics
+    customer_metrics = get_customer_metrics(customers)
+    asset_assignments = get_asset_assignments()
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Handle AJAX requests
-        # Prepare customer data for AJAX response
-        customer_data = [{
-            'id': customer.id,
-            'name': customer.name,
-            'phone_number': customer.phone_number,
-            'email': customer.email,
-            'date_joined': customer.date_joined
-        } for customer in page_obj.object_list]
-
-        return JsonResponse({
-            'customers': customer_data,
-            'has_next': page_obj.has_next(),
-            'has_previous': page_obj.has_previous(),
-            'num_pages': paginator.num_pages
-        })
-
-    # Quick Info Metrics
-    total_customers = customers.count()
-    customers_with_assets = Customer.objects.annotate(asset_count=Count('assignment')).filter(asset_count__gt=0).count()
-    customers_without_assets = total_customers - customers_with_assets
-
-    assigned_assets = Asset.objects.filter(assigned_to__isnull=False).count()
-    unassigned_assets = Asset.objects.filter(assigned_to__isnull=True).count()
 
     context = {
         'page_obj': page_obj,
-        'show_pagination': show_pagination,
-        'total_customers': total_customers,
-        'customers_with_assets': customers_with_assets,
-        'customers_without_assets': customers_without_assets,
-        'assigned_assets': assigned_assets,
-        'unassigned_assets': unassigned_assets,
-        'search_query': search_query,
+        'show_pagination': paginator.num_pages > 1,
+        'customers_count': customers.count(),
+        'search_query': search_query,  # Include search query in context
+        **customer_metrics,  # Add customer metrics to context
+        **asset_assignments
     }
 
     return render(request, 'inventory/customer/customers.html', context)
+
 
 
 # View a single customer record

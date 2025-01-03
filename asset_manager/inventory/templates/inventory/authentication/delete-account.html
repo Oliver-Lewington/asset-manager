@@ -1,0 +1,39 @@
+{% extends "inventory/base.html" %}
+
+{% block content %}
+    <body>
+        <!-- Form container -->
+        <div class="container shadow p-4 bg-body-tertiary rounded w-50 overflow-x-auto">
+            <h3 class="text-center">Delete Your Account</h3>
+
+            <hr>
+
+            <p class="text-center text-muted">
+                Deleting your account will remove all your personal data from our system. This includes your
+                account details, activity logs, and any associated data. Please note that this action is <strong>permanent</strong>
+                and cannot be undone. We recommend downloading or saving any necessary information before proceeding.
+            </p>
+
+            <p class="text-center">
+                If you are experiencing issues or need assistance, consider reaching out to our support team before deleting your account.
+                We're here to help and can address any concerns you may have.
+            </p>
+            
+            <form method="POST" autocomplete="off">
+                {% csrf_token %}
+
+                <!-- Centered button group -->
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button type="submit" class="btn btn-danger w-50">Yes, Delete My Account</button>
+                    <a href="{% url '' %}" class="btn btn-secondary w-50">No, Keep My Account</a>
+                </div>
+            </form>
+
+            <hr>
+
+            <p class="text-center text-muted">
+                <small>If you have any questions, please contact our support team at <a href="mailto:support@example.com">support@example.com</a>.</small>
+            </p>
+        </div>
+    </body>
+{% endblock %}

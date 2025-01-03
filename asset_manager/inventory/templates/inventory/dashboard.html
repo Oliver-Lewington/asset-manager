@@ -109,7 +109,7 @@
                                             <span class="badge bg-danger">Decommissioned</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ asset.date_assigned|date:"Y-m-d" }}</td>
+                                    <td>{{ asset.last_updated|date:"Y-m-d" }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

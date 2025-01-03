@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
 from ..forms.authentication_forms import LoginForm, CreateUserForm
 
@@ -62,6 +63,18 @@ def login(request):
     context = {'form': form}
     return render(request, 'inventory/authentication/login.html', context)
 
+@login_required(login_url='login')
+def delete_account(request):
+    if request.method == "POST":
+        # Delete the current user's account
+        user = request.user
+        user.delete()
+        messages.success(request, "Your account has been successfully deleted, please register again if you would like to use the application.")
+        return redirect('login')  # Redirect to the login page or homepage
+    
+    return render(request, 'inventory/authentication/delete-account.html')  # Confirmation page
+
+@login_required(login_url='login')
 def logout(request):
     """
     Handle user logout.

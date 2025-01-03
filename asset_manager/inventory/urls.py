@@ -4,7 +4,7 @@ from .views import asset_views
 from .views import maintenance_views
 from .views import customer_views
 from .views.dashboard_views import dashboard
-from .views.authentication_views import login, register, logout
+from .views import authentication_views
 
 urlpatterns = [
     path('', dashboard, name=''),
@@ -24,13 +24,14 @@ urlpatterns = [
 
     # - Customer URLs
     path('customers/', customer_views.view_customers, name='view-customers'),
-    path('customers/<int:customer_id>/', customer_views.view_customer, name='view-customer'),
     path('customers/create', customer_views.create_customer, name='create-customer'),
+    path('customers/<int:customer_id>/', customer_views.view_customer, name='view-customer'),
     path('customers/update/<int:customer_id>/', customer_views.update_customer, name='update-customer'),
     path('customers/delete/<int:customer_id>/', customer_views.delete_customer, name='delete-customer'),
 
-    # - Authorizing URLs
-    path('login/', login, name='login'),
-    path('register/', register, name='register'),
-    path('logout/', logout, name='logout'),    
+    # - User Management/Authorization URLs
+    path('login/', authentication_views.login, name='login'),
+    path('logout/', authentication_views.logout, name='logout'),    
+    path('register/', authentication_views.register, name='register'),
+    path('delete-account/', authentication_views.delete_account, name='delete-account')
 ]

@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
         data: {
             labels: warrantyStatusLabels,
             datasets: [{
-                data: [assetsUnderWarranty, assetsOutOfWarranty],
-                backgroundColor: ['#28a745', '#dc3545'],
+                data: [assetsUnderWarranty, assetsOutOfWarranty, assetsNotApplicable],
+                backgroundColor: ['#28a745', '#dc3545', '#212529'],
             }]
         }
     });

@@ -21,41 +21,23 @@ def view_assets(request):
     assets = get_filtered_assets(search_query)
 
     # Pagination: Show 5 assets per page
-    paginator = Paginator(assets.order_by('-date_assigned'), 5)
+    paginator = Paginator(assets.order_by('-last_updated'), 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    # Check if pagination is needed
-    show_pagination = paginator.num_pages > 1
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Handle AJAX requests
-        # Prepare asset data for AJAX response
-        asset_data = [{
-            'id': asset.id,
-            'name': asset.name,
-            'status': asset.status,
-            'warranty': 'Valid' if asset.is_warranty_pending else 'Expired',
-        } for asset in page_obj.object_list]
-
-        return JsonResponse({
-            'assets': asset_data,
-            'has_next': page_obj.has_next(),
-            'has_previous': page_obj.has_previous(),
-            'num_pages': paginator.num_pages,
-        })
 
     # Calculate quick info metrics
     asset_metrics = get_asset_metrics(assets)
 
     context = {
         'page_obj': page_obj,
-        'show_pagination': show_pagination,
+        'show_pagination': paginator.num_pages > 1,
         'assets_count': assets.count(),
+        'search_query': search_query,  # Include search query in context
         **asset_metrics,  # Add asset metrics to context
-        'search_query': search_query,
     }
 
     return render(request, 'inventory/asset/assets.html', context)
+
 
 
 # View a single asset record
