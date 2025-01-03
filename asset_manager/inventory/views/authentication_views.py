@@ -5,8 +5,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 
 from ..forms.authentication_forms import LoginForm, CreateUserForm
 
-# Helper Functions
-
+# Helper Function
 def authenticate_user(request, username, password):
     """Authenticate a user with the given username and password."""
     return authenticate(request, username=username, password=password)

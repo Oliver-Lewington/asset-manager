@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -6,7 +5,8 @@ from django.shortcuts import render, get_object_or_404
 
 from ..forms.asset_forms import AssetForm
 from ..models import Asset, MaintenanceHistory
-from ..utils import get_filtered_assets, get_asset_metrics, redirect_when_next, get_asset_by_id
+from ..utils.shared_utils import redirect_when_next
+from ..utils.asset_utils import get_filtered_assets, get_asset_metrics, get_asset_by_id
 
 # View all records
 @login_required(login_url='login')

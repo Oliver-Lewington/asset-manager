@@ -6,8 +6,10 @@ from django.shortcuts import render, get_object_or_404
 
 from ..models import Asset, Customer
 from ..forms.customer_forms import CustomerForm
-from ..utils import redirect_when_next, get_filtered_customers, get_customer_metrics, get_asset_assignments
 
+from ..utils.shared_utils import redirect_when_next
+from ..utils.asset_utils import get_asset_assignments
+from ..utils.customer_utils import get_filtered_customers, get_customer_metrics
 # View all records
 @login_required(login_url='login')
 def view_customers(request):

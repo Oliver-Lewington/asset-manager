@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from ..utils import get_asset_counts, get_current_month_maintenance_data, get_recent_assets
+from ..utils.maintenance_utils import get_current_month_maintenance_data
+from ..utils.asset_utils import get_asset_counts, get_recent_assets
 
 # - Dashboard
 @login_required(login_url='login/')

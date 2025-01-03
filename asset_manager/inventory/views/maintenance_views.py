@@ -1,9 +1,12 @@
 from django.contrib import messages
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
 
 from ..forms.maintenance_forms import MaintenanceHistoryForm
-from ..utils import get_asset_by_id, get_maintenance_by_id
+
+from ..utils.asset_utils import get_asset_by_id
+from ..utils.shared_utils import redirect_when_next
+from ..utils.maintenance_utils import get_maintenance_by_id
 
 @login_required(login_url='login')
 def create_maintenance(request, asset_id):
@@ -20,7 +23,7 @@ def create_maintenance(request, asset_id):
             maintenance_record.asset = asset  # Ensure the asset is correctly set
             maintenance_record.save()
             messages.success(request, 'Maintenance record created successfully.')
-            return redirect('view-asset', asset_id=asset.id)
+            return redirect_when_next(request, 'view-asset', asset_id=asset.id)
     else:
         form = MaintenanceHistoryForm(initial={'asset': asset})
 
@@ -43,7 +46,7 @@ def update_maintenance(request, maintenance_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Maintenance record updated successfully.')
-            return redirect('view-asset', asset_id=maintenance.asset.id)
+            return redirect_when_next(request, 'view-asset', asset_id=maintenance.asset.id)
     else:
         form = MaintenanceHistoryForm(instance=maintenance)
 
@@ -62,4 +65,4 @@ def delete_maintenance(request, maintenance_id):
     asset_id = maintenance.asset.id  # Store asset ID before deleting the maintenance record
     maintenance.delete()
     messages.success(request, 'Maintenance record deleted successfully.')
-    return redirect('view-asset', asset_id=asset_id)
+    return redirect_when_next(request, 'view-asset', asset_id=asset_id)
