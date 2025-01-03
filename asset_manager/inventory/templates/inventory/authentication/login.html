@@ -3,27 +3,24 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <body>
-        <!-- Form container -->
-        <div class="container shadow p-4 bg-body-tertiary rounded w-50 overflow-x-auto" > 
-            <h3 class="text-center">Login to your account</h3>
+    <div class="container shadow p-4 bg-body-tertiary rounded col-12 col-md-5" > 
+        <h3 class="text-center">Login to your account</h3>
 
-            <hr>
+        <hr>
 
-            <form method="POST" autocomplete="off">
-                {% csrf_token %}
-                {{ form|crispy }}
-                
-                <!-- Centered button -->
-                <div class="d-flex justify-content-center"> 
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </div>
-            </form>
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            {{ form|crispy }}
             
-            <div class="text-center mt-3">
-                <p>Don't have an account?</p>
-                <a href="{% url 'register' %}">Register</a>
+            <!-- Centered button -->
+            <div class="d-flex justify-content-center"> 
+                <button type="submit" class="btn btn-primary w-100">Login</button>
             </div>
+        </form>
+        
+        <div class="text-center mt-3">
+            <p>Don't have an account?</p>
+            <a href="{% url 'register' %}">Register</a>
         </div>
-    </body>
+    </div>
 {% endblock%}

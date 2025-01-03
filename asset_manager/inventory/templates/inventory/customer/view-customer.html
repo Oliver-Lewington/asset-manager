@@ -42,7 +42,7 @@
                 </div>
 
                 {% if customer.assignment.exists %}
-                <div class="col-12">
+                <div class="col-12 table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -71,7 +71,7 @@
                                     <span class="text-muted">No warranty information</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     <a href="{% url 'view-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-eye text-secondary" style="cursor: pointer;"></i></a>
                                     <a href="{% url 'update-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-pencil-square text-primary" style="cursor: pointer;"></i></a>
                                     {% if user.is_staff %}

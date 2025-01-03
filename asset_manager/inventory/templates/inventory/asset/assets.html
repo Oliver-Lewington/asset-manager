@@ -50,7 +50,7 @@
                 <span>Use the search bar below to find assets by name. Simply type the <strong>asset name</strong> to quickly locate the <i>desired entry</i>.</span>
             </p>
             <!-- Floating Action Button for "Add Asset" -->
-            <a href="{% url 'create-asset' %}" class="btn btn-outline-primary">
+            <a href="{% url 'create-asset' %}" class="btn btn-outline-primary ms-3">
                 <i class="bi bi-plus-circle"></i> Add Asset
             </a>
         </div>
@@ -60,8 +60,8 @@
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                 <h5>Assets List</h5>
                 <!-- Search Box in Header -->
-                <form method="get" class="d-flex w-25">
-                    <div class="input-group w-100">
+                <form method="get" class="d-flex ms-2">
+                    <div class="input-group col-md-3 col-12">
                         <!-- Search Box with Reset Button Inside -->
                         <input type="text" name="search" class="form-control" placeholder="Search Assets..." value="{{ search_query }}">
                     
@@ -114,7 +114,7 @@
                                             <span class="badge bg-dark"><i class="bi bi-shield-exclamation"></i> N/A</span>
                                         {% endif %}
                                     </td>
-                                    <td class="text-center">
+                                    <td>
                                         <a href="{% url 'view-asset' asset.id %}" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye"></i> View
                                         </a>

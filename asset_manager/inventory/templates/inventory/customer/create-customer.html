@@ -3,22 +3,19 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <body>
-        <!-- Form container -->
-        <div class="container shadow p-4 bg-body-tertiary rounded w-50 overflow-x-auto" > 
-            <h3 class="text-center">Add customer</h3>
-            <h6>Start adding in the required details for your customer, then click save.</h6>
+    <div class="container shadow p-4 bg-body-tertiary rounded col-12 col-md-5" > 
+        <h3 class="text-center">Add customer</h3>
+        <h6>Start adding in the required details for your customer, then click save.</h6>
 
-            <hr>
+        <hr>
 
-            <form method="POST" autocomplete="off">
+        <form method="POST" autocomplete="off">
 
-                {% csrf_token %}
-                {{ form|crispy }}
-                    
-                <a class="btn btn-outline-danger btn-sm" href={% url 'view-customers' %}>Cancel</a>
-                <button type="submit" class="btn btn-outline-primary btn-sm">Create customer</button>              
-            </form>
-        </div>
-    </body>
+            {% csrf_token %}
+            {{ form|crispy }}
+                
+            <a class="btn btn-outline-danger btn-sm" href={% url 'view-customers' %}>Cancel</a>
+            <button type="submit" class="btn btn-outline-primary btn-sm">Create customer</button>              
+        </form>
+    </div>
 {% endblock content %}

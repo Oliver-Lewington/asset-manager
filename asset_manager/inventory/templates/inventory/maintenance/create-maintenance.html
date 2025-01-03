@@ -3,22 +3,19 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <body>
-        <!-- Form container -->
-        <div class="container shadow p-4 bg-body-tertiary rounded w-50 overflow-x-auto"> 
-            <h3 class="text-center">Create Maintenance for {{ asset.name }}</h3>
-            <h6>Start adding in the required details for your this assets maintenance record.</h6>
+    <div class="container shadow p-4 bg-body-tertiary rounded col-12 col-md-5"> 
+        <h3 class="text-center">Create Maintenance for {{ asset.name }}</h3>
+        <h6>Start adding in the required details for your this assets maintenance record.</h6>
 
-            <hr>
+        <hr>
 
-            <form method="POST" autocomplete="off">
+        <form method="POST" autocomplete="off">
 
-                {% csrf_token %}
-                {{ form|crispy }}
-                    
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.history.back()">Cancel</button>
-                <button type="submit" class="btn btn-outline-primary btn-sm">Create Maintenance</button>              
-            </form>
-        </div>
-    </body>
+            {% csrf_token %}
+            {{ form|crispy }}
+                
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.history.back()">Cancel</button>
+            <button type="submit" class="btn btn-outline-primary btn-sm">Create Maintenance</button>              
+        </form>
+    </div>
 {% endblock content %}

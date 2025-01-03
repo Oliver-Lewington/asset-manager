@@ -3,9 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<body>
-    <!-- Form container -->
-    <div class="container shadow p-4 bg-body-tertiary rounded w-50 overflow-x-auto" > 
+    <div class="container shadow p-4 bg-body-tertiary rounded col-12 col-md-5" > 
         <h3 class="text-center">Create your account</h3>
         <h5 class="text-center">Start managing your clients today!</h5>
 
@@ -24,5 +22,4 @@
             <a href="{% url 'login' %}">Login</a>
         </div>
     </div>
-</body>
 {% endblock content %}
