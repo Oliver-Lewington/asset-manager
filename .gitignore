@@ -2,7 +2,4 @@
 venv/
 .venv/
 
-# Environment variables
-.env
-
 asset_manager/staticfiles
