@@ -11,18 +11,6 @@ def get_maintenance_by_id(maintenance_id):
     """
     return get_object_or_404(MaintenanceHistory, id=maintenance_id)
 
-# --- Customer-related Functions ---
-def get_filtered_customers(search_query):
-    """Filters customers based on search query."""
-    if search_query:
-        return Customer.objects.filter(
-            Q(name__icontains=search_query) |
-            Q(email__icontains=search_query) |
-            Q(phone_number__icontains=search_query)
-        )
-    return Customer.objects.all()
-
-
 def get_current_month_maintenance_data():
     """
     Returns the count of different types of maintenance activities performed in the current month.

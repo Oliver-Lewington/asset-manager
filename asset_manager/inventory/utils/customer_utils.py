@@ -31,9 +31,3 @@ def get_customer_metrics(customers):
         'customers_with_assets': customers_with_assets,
         'customers_without_assets': customers_without_assets,
     }
-
-def get_customer_asset_counts():
-    """
-    Returns the count of distinct customers with assets assigned.
-    """
-    return Customer.objects.filter(asset__isnull=False).distinct().count()

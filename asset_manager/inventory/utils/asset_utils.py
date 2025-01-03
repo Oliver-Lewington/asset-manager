@@ -65,9 +65,3 @@ def get_recent_assets(number_of_days):
     return Asset.objects.filter(date_assigned__gte=one_month_ago).order_by('-last_updated')
 
 
-def get_asset_types():
-    """
-    Returns a list of distinct asset types currently in the system.
-    """
-    return Asset.objects.values('asset_type').distinct()
-
