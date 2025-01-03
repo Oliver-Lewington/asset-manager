@@ -29,25 +29,26 @@ class CreateUserForm(UserCreationForm):
             'password2': PasswordInput(attrs={'placeholder': 'Confirm your password'}),
         }
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        # Set admin privileges if the user selected 'can_delete'
-        if self.cleaned_data['can_delete']:
-            user.is_staff = True  # Grants admin privileges
-        if commit:
-            user.save()
-        return user
-
-
 class LoginForm(AuthenticationForm):
     """
-    Form to authenticate an existing user.
+    Form to authenticate an existing user with custom error messages.
     """
     username = forms.CharField(
-        widget=TextInput(attrs={'placeholder': 'Enter your username'}),
+        widget=forms.TextInput(attrs={'placeholder': 'Enter your username'}),
         label="Username"
     )
     password = forms.CharField(
-        widget=PasswordInput(attrs={'placeholder': 'Enter your password'}),
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}),
         label="Password"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Override default error messages
+        self.error_messages = {
+            'invalid_login': "The username or password is incorrect. "
+                              "Remember, both the username and password are case-sensitive.",
+            'inactive': "Your account is inactive. Please contact support for assistance."
+        }
+
+
