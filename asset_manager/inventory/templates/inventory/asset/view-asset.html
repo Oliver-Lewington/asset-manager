@@ -126,16 +126,15 @@
                 </div>
                 {% endif %}
             </div>
-
+        {% if user.is_staff %}
         <div class="card-footer d-flex justify-content-end gap-2">
             <a href="{% url 'update-asset' asset.id %}" class="btn btn-outline-primary btn-sm">Edit Asset</a>
-            {% if user.is_staff %}
             <form method="POST" action="{% url 'delete-asset' asset.id %}" onsubmit="showConfirmation(event)">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-danger btn-sm">Delete Asset</button>
             </form>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

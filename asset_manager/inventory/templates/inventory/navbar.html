@@ -1,4 +1,4 @@
-{% load static %} 
+{% load static %}
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
   <div class="container-fluid">
@@ -27,32 +27,32 @@
           </a>
         </li>
       </ul>
-      {% endif %}
       <ul class="navbar-nav ms-auto">
-        {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link {% if request.path == '/logout/' %}active{% endif %}" href="{% url 'logout' %}">
-              <i class="bi bi-box-arrow-right me-1"></i> Sign Out
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-flex align-items-center {% if request.path == '/delete-account/' %}text-danger{% endif %}" href="{% url 'delete-account' %}">
-              <i class="bi bi-trash3-fill me-1"></i>Delete Account
-            </a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
-              <i class="bi bi-box-arrow-in-right me-1"></i> Login
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.path == '/register/' %}active{% endif %}" href="{% url 'register' %}">
-              <i class="bi bi-person-plus me-1"></i> Register
-            </a>
-          </li>
-        {% endif %}
+        <!-- User Dropdown for Authenticated User -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-2"></i> Hello, {{ user.first_name|default:user.username }}!
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item fw-bold" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
+            <li><a class="dropdown-item text-danger fw-bold" href="{% url 'delete-account' %}"><i class="bi bi-trash3-fill me-2"></i> Delete Account</a></li>
+          </ul>
+        </li>
       </ul>
+      {% else %}
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'login' %}">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/register/' %}active{% endif %}" href="{% url 'register' %}">
+            <i class="bi bi-person-plus me-1"></i> Register
+          </a>
+        </li>
+      </ul>
+      {% endif %}
     </div>
   </div>
 </nav>

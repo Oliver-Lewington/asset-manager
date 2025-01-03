@@ -11,8 +11,8 @@ class CreateUserForm(UserCreationForm):
     can_delete = forms.BooleanField(
         required=False,
         initial=False,
-        label="Can delete records",
-        help_text="Grant admin privileges to delete items.",
+        label="Register as Administrator",
+        help_text="Checking this box will grant you admin privileges, enabling you to add, edit and delete customer, asset and maintenance records.",
     )
 
     class Meta:

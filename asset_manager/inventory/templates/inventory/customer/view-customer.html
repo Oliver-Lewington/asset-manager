@@ -73,8 +73,8 @@
                                 </td>
                                 <td>
                                     <a href="{% url 'view-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-eye text-secondary" style="cursor: pointer;"></i></a>
-                                    <a href="{% url 'update-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-pencil-square text-primary" style="cursor: pointer;"></i></a>
                                     {% if user.is_staff %}
+                                    <a href="{% url 'update-asset' asset.id %}?next={{ request.path }}"><i class="bi bi-pencil-square text-primary" style="cursor: pointer;"></i></a>
                                     <form method="POST" action="{% url 'delete-asset' asset.id %}?next={{ request.path }}" onsubmit="showConfirmation(event)" style="display: inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-link p-0 m-0 text-danger border-0">
@@ -95,15 +95,15 @@
                 {% endif %}
             </div>
         </div>
+        {% if user.is_staff %}
         <div class="card-footer d-flex justify-content-end gap-2">
             <a href="{% url 'update-customer' customer.id %}" class="btn btn-outline-primary btn-sm">Edit Customer</a>
-            {% if user.is_staff %}
             <form method="POST" action="{% url 'delete-customer' customer.id %}" onsubmit="showConfirmation(event)">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-outline-danger btn-sm">Delete Customer</button>
             </form>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

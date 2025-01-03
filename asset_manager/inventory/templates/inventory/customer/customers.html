@@ -45,14 +45,18 @@
 
     <div class="mb-4 d-flex justify-content-between align-items-center">
         <p>
+            {% if user.is_staff %}
             <span>Manage and view your customers below. Use the <strong>"Add Customer"</strong> button to register new customers.</span>
             <br>
+            {% endif %}
             <span>Use the search bar below to locate a customer. Simply type the customer's <strong>name</strong> or <strong>email</strong> to quickly locate the <i>desired entry</i>.</span>
         </p>
+        {% if user.is_staff %}
         <!-- Floating Action Button for "Add Customer" -->
         <a href="{% url 'create-customer' %}" class="btn btn-outline-primary ms-3">
             <i class="bi bi-plus-circle"></i> Add Customer
         </a>
+        {% endif %}
     </div>
 
     <!-- Customer Table -->
