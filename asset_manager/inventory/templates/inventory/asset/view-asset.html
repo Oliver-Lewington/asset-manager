@@ -4,7 +4,7 @@
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-secondary text-white d-flex align-items-center">
-            <a class="text-white me-3" href="{% url 'view-assets' %}" style="font-size: 1.5rem; font-weight: bold;">
+            <a class="text-white me-3"href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'view-assets' %}{% endif %}" style="font-size: 1.5rem; font-weight: bold;">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h4 class="mb-0">Asset Details</h4>
@@ -45,10 +45,31 @@
                                 </span>
                             {% endif %}
                         {% else %}
-                            <span class="text-muted">No warranty information</span>
+                            <em class="text-muted">No warranty information</em>
                         {% endif %}
                     </p>
                 </div>
+                <div class="col-md-6">
+                    <strong>Assigned To:</strong>
+                    <p>
+                        {% if asset.assigned_to %}
+                            <span style="font-weight: 600;">Name:</span> 
+                            {{ asset.assigned_to|default:"Asset is currently unassigned" }}
+                            <br>
+                            <span style="font-weight: 600;">Email:</span> 
+                            <a href="mailto:{{ asset.assigned_to.email }}">{{ asset.assigned_to.email|default:"Email is not available" }}</a>
+                            <br>
+                            <!-- View Customer Button with Eye Icon next to Name and Email -->
+                            <a href="{% url 'view-customer' asset.assigned_to.id %}?next={{ request.path }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> View Customer
+                            </a>
+                        {% else %}
+                            <em class="text-muted">Asset is currently unassigned</em>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                
                 <div class="col-md-6">
                     <strong>Description:</strong>
                     <p>{{ asset.description|default:"No description provided" }}</p>

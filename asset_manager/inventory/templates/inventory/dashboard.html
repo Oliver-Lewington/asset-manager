@@ -1,5 +1,7 @@
 {% extends "inventory/base.html" %}
+
 {% load static %}
+
 {% block content %}
     <!-- Dashboard Introduction -->
     <div class="row mb-4">
@@ -60,15 +62,15 @@
     <div class="row mb-4">
         <div class="col-lg-6">
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-light text-dark font-weight-bold">Monthly Trends</div>
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"><h5>Monthly Maintenance Activity</h5></div>
                 <div class="card-body">
-                    <canvas id="monthlyBarChart"></canvas>
+                    <canvas id="maintenanceBarChart"></canvas>
                 </div>
             </div>
         </div>
         <div class="col-lg-6">
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-light text-dark font-weight-bold">Asset Status Distribution</div>
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"><h5>Asset Status Distribution</h5></div>
                 <div class="card-body">
                     <canvas id="horizontalBarChart"></canvas>
                 </div>
@@ -80,7 +82,9 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm w-100">
-                <div class="card-header bg-light text-dark font-weight-bold">Recent Asset Activity</div>
+                <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                    <h5>Recent Asset Activity <em>(Past 7 Days)</em></h5>
+                </div>
                 <div class="card-body p-0" style="overflow-x: auto;"> <!-- Added scrollable container -->
                     <table class="table table-striped table-hover table-bordered mb-0">
                         <thead>
@@ -114,22 +118,17 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Pass data from Django context to JavaScript -->
     <script>
-        // Pass context data to JavaScript variables
-        const monthlyLabels = {{ months|safe }};
-        const activeAssetsData = {{ active_assets_month|safe }};
-        const maintenanceAssetsData = {{ maintenance_assets_month|safe }};
-        const decommissionedAssetsData = {{ decommissioned_assets_month|safe }};
+        const maintenanceTypeLabels = ['Repair', 'Software Update', 'Cleaning', 'Other'];
+        const assetStatusLabels = ['Active Assets', 'Maintenance Assets', 'Decommissioned Assets'];
+
         const activeAssetsCount = {{ active_assets }};
         const maintenanceAssetsCount = {{ maintenance_assets }};
         const decommissionedAssetsCount = {{ decommissioned_assets }};
+        const maintenanceCounts = [{{ repair_count }}, {{ software_update_count }}, {{ cleaning_count }}, {{ other_count }}];
     </script>
 
-    <!-- Add Chart.js Script -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Link to external JS file -->
-    <script src="{% static 'js/dashboard-charts.js' %}"></script>
+    <script src="{% static 'js/charts/dashboard-charts.js' %}"></script>
 {% endblock %}

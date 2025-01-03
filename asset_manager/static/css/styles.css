@@ -33,6 +33,11 @@
     margin: 0 auto; /* Center align the form */
     padding: 1rem;
 }
-
-
+/* Limit name column width and prevent overflow */
+.wrapped-column {
+    max-width: 250px;  /* Adjust width as needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
 

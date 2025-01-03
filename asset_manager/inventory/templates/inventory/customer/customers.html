@@ -1,5 +1,143 @@
 {% extends "inventory/base.html" %}
 
-{% block content %}
+{% load static %}
 
+{% block content %}
+<div class="container mt-4">
+    <!-- Quick Info Section -->
+    <div class="row mb-4">
+        <!-- Total Customers -->
+        <div class="col-lg-3 mb-3">
+            <div class="card shadow text-center" style="height: 100%;">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="card-title">Total Customers</h5>
+                    <h3 class="text-primary">{{ total_customers }}</h3>
+                </div>
+            </div>
+        </div>
+        <!-- Customers with Assets -->
+        <div class="col-lg-3 mb-3">
+            <div class="card shadow text-center" style="height: 100%;">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="card-title">Customers with Assets</h5>
+                    <h3 class="text-success">{{ customers_with_assets }}</h3>
+                </div>
+            </div>
+        </div>
+        <!-- Unassigned Assets -->
+        <div class="col-lg-3 mb-3">
+            <div class="card shadow text-center" style="height: 100%;">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="card-title">Customers without Assets</h5>
+                    <h3 class="text-warning">{{ customers_without_assets }}</h3>
+                </div>
+            </div>
+        </div>
+        <!-- Customers Donut Chart -->
+        <div class="col-lg-3 mb-3">
+            <div class="card shadow text-center" style="height: 100%;">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <canvas id="customerChart" style="width: 100%; max-width: 150px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>    
+
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <p>
+            <span>Manage and view your customers below. Use the <strong>"Add Customer"</strong> button to register new customers.</span>
+            <br>
+            <span>Use the search bar below to locate a customer. Simply type the customer's <strong>name</strong> or <strong>email</strong> to quickly locate the <i>desired entry</i>.</span>
+        </p>
+        <!-- Floating Action Button for "Add Customer" -->
+        <a href="{% url 'create-customer' %}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i> Add Customer
+        </a>
+    </div>
+
+    <!-- Customer Table -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h5>Customer List</h5>
+            <!-- Real-time Search Box in Header -->
+            <input type="text" id="searchBox" class="form-control w-25" value="{{ request.GET.search }}" placeholder="Search Customers...">
+        </div>
+        <div class="card-body">
+            <!-- table-responsive to make the table scrollable on small screens -->
+            <div class="table-responsive">
+                <!-- Table for displaying results -->
+                <table class="table table-striped" id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Date Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in page_obj.object_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="wrapped-column">{{ customer.name }}</td>
+                            <td><a href="mailto:{{customer.email}}">{{customer.email}}</a></td>
+                            <td>{{ customer.phone_number|default:"No phone number provided" }}</td>
+                            <td>{{ customer.date_joined|date:"Y-m-d" }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'view-customer' customer.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Alert message for no results -->
+            <div id="noResultsAlert" class="alert alert-danger text-center" style="display: none;">
+                No customers found.
+            </div>
+        </div>
+
+        <div class="card-footer d-flex align-items-center">
+            <nav class="w-100">
+                {% if show_pagination %}
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" id="previousPage">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" data-page="{{ num }}" class="pagination-link">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" id="nextPage">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </nav>
+        </div>     
+    </div>
+
+    <script src="{% static 'js/searchRequests.js' %}"></script>
+
+    <script>
+        const assignmentStatusLabels = ['Assigned Assets', 'Unassigned Assets'];
+        
+        const assignedAssets = {{ assigned_assets }};
+        const unassignedAssets = {{ unassigned_assets }};
+
+        // Initialize for the customers table with a specific search box
+        setupSearchTable('searchBox', 'customerTable', '/customers', 'customers', 'noResultsAlert', '.pagination');
+    </script> 
+    
+    <script src="{% static 'js/charts/customer-charts.js' %}"></script>
 {% endblock %}
