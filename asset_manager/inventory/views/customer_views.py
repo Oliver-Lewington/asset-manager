@@ -3,10 +3,11 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 
 from ..models import Asset, Customer
 from ..forms.customer_forms import CustomerForm
+from ..utils import redirect_when_next
 
 # View all records
 @login_required(login_url='login')
@@ -48,13 +49,15 @@ def view_customers(request):
             'customers': customer_data,
             'has_next': page_obj.has_next(),
             'has_previous': page_obj.has_previous(),
-            'num_pages': paginator.num_pages,
+            'num_pages': paginator.num_pages
         })
 
     # Quick Info Metrics
     total_customers = customers.count()
     customers_with_assets = Customer.objects.annotate(asset_count=Count('assignment')).filter(asset_count__gt=0).count()
     customers_without_assets = total_customers - customers_with_assets
+
+    assigned_assets = Asset.objects.filter(assigned_to__isnull=False).count()
     unassigned_assets = Asset.objects.filter(assigned_to__isnull=True).count()
 
     context = {
@@ -63,6 +66,7 @@ def view_customers(request):
         'total_customers': total_customers,
         'customers_with_assets': customers_with_assets,
         'customers_without_assets': customers_without_assets,
+        'assigned_assets': assigned_assets,
         'unassigned_assets': unassigned_assets,
         'search_query': search_query,
     }
@@ -105,7 +109,7 @@ def create_customer(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Customer has been created successfully.")
-            return redirect('view-customers')
+            return redirect_when_next(request,'view-customers')
 
     return render(request, 'inventory/customer/create-customer.html', {'form': form})
 
@@ -123,11 +127,11 @@ def update_customer(request, customer_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Customer record updated successfully.')
-            return redirect('view-customer', customer_id=customer_id)
+            return redirect_when_next(request, 'view-customer', customer_id=customer_id)
     else:
         form = CustomerForm(instance=customer)
 
-    return render(request, 'inventory/customer/update-customer.html', {'form': form})
+    return render(request, 'inventory/customer/update-customer.html', {'form': form, 'customer_id': customer.id})
 
 
 # Delete a customer
@@ -140,4 +144,4 @@ def delete_customer(request, customer_id):
     customer.delete()
 
     messages.success(request, 'Customer record deleted successfully.')
-    return redirect('view-customers')
+    return redirect_when_next(request, 'view-customers')

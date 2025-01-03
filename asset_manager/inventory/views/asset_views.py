@@ -2,11 +2,11 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 
-from ..utils.asset_utils import get_filtered_assets, get_asset_metrics, redirect_when_next
-from ..models import Asset, MaintenanceHistory
 from ..forms.asset_forms import AssetForm
+from ..models import Asset, MaintenanceHistory
+from ..utils import get_filtered_assets, get_asset_metrics, redirect_when_next, get_asset_by_id
 
 # View all records
 @login_required(login_url='login')
@@ -65,7 +65,7 @@ def view_asset(request, asset_id):
     Displays detailed information for a single asset, including maintenance history.
     Allows for editing or deletion of the asset.
     """
-    asset = get_object_or_404(Asset, id=asset_id)
+    asset = get_asset_by_id(asset_id)
 
     # Fetch maintenance history related to the asset
     maintenance_history = MaintenanceHistory.objects.filter(asset=asset).order_by('-date_maintained')
@@ -93,7 +93,7 @@ def create_asset(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your Asset has been created successfully.")
-            return redirect('view-assets')
+            return redirect_when_next(request, 'view-assets')
 
     return render(request, 'inventory/asset/create-asset.html', {'form': form})
 
@@ -110,6 +110,7 @@ def update_asset(request, asset_id):
         form = AssetForm(request.POST, instance=asset)
         if form.is_valid():
             form.save()
+
             messages.success(request, 'Asset record updated successfully.')
             return redirect_when_next(request, 'view-asset', asset_id=asset_id)
     else:
@@ -128,5 +129,4 @@ def delete_asset(request, asset_id):
     asset.delete()
 
     messages.success(request, 'Asset record deleted successfully.')
-
     return redirect_when_next(request, 'view-assets')  # Redirect to 'view-assets' if no 'next' param

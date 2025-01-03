@@ -1,20 +1,17 @@
 from django.shortcuts import render
-from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
-from ..models import Asset
-from .helpers import get_asset_counts, get_monthly_asset_data, get_recent_assets
+from ..utils import get_asset_counts, get_current_month_maintenance_data, get_recent_assets
 
 # - Dashboard
 @login_required(login_url='login/')
 def dashboard(request):
-    today = timezone.now().date()
-    start_of_month = today.replace(day=1)
-
     # Get data using helper functions
+    recent_assets = get_recent_assets(7)
     total_assets, active_assets, maintenance_assets, decommissioned_assets = get_asset_counts()
-    months, active_assets_month, maintenance_assets_month, decommissioned_assets_month = get_monthly_asset_data(start_of_month)
-    recent_assets = get_recent_assets()
+    
+    # Get current month maintenance data
+    repair_count, software_update_count, cleaning_count, other_count = get_current_month_maintenance_data()
 
     # Prepare context for the template
     context = {
@@ -22,11 +19,13 @@ def dashboard(request):
         'active_assets': active_assets,
         'maintenance_assets': maintenance_assets,
         'decommissioned_assets': decommissioned_assets,
-        'months': months,
-        'active_assets_month': active_assets_month,
-        'maintenance_assets_month': maintenance_assets_month,
-        'decommissioned_assets_month': decommissioned_assets_month,
         'recent_assets': recent_assets,
+        'repair_count': repair_count,
+        'software_update_count': software_update_count,
+        'cleaning_count': cleaning_count,
+        'other_count': other_count,
     }
 
     return render(request, 'inventory/dashboard.html', context)
+
+
