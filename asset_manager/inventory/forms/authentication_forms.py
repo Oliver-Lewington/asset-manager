@@ -8,7 +8,7 @@ class CreateUserForm(UserCreationForm):
     """
     Form to create a new user with optional admin privileges.
     """
-    can_delete = forms.BooleanField(
+    is_admin = forms.BooleanField(
         required=False,
         initial=False,
         label="Register as Administrator",
@@ -17,7 +17,7 @@ class CreateUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'can_delete']
+        fields = ['username', 'password1', 'password2', 'is_admin']
         labels = {
             'username': 'Username',
             'password1': 'Password',
@@ -28,6 +28,16 @@ class CreateUserForm(UserCreationForm):
             'password1': PasswordInput(attrs={'placeholder': 'Enter a secure password'}),
             'password2': PasswordInput(attrs={'placeholder': 'Confirm your password'}),
         }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        # Set admin privileges if the user selected 'is_admin'
+        if self.cleaned_data['is_admin']:
+            user.is_staff = True  # Grants admin privileges
+        if commit:
+            user.save()
+        return user
+
 
 class LoginForm(AuthenticationForm):
     """
