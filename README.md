@@ -5,7 +5,7 @@ A brief description of what the project does and who it's for.
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Features](#features)
+- [Wireframes](#wireframes)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -29,3 +29,8 @@ venv\Scripts\activate     # Windows
 
 # Install asset-manager application dependencies
 pip install -r requirements.txt
+```
+## Usage
+
+#Wireframes
+
