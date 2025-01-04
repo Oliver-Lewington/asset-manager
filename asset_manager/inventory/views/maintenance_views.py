@@ -17,26 +17,24 @@ def create_maintenance(request, asset_id):
     asset = get_asset_by_id(asset_id)  # Utility function to fetch asset or return 404
 
     if request.method == 'POST':
-        form = MaintenanceHistoryForm(request.POST, initial={'asset': asset})
+        form = MaintenanceHistoryForm(request.POST, initial={'asset': asset}, user=request.user)
         if not request.user.is_staff:  # Check if the user is not staff
             form.fields['performed_by'].initial = request.user  # Set 'performed_by' to current user if not staff
         if form.is_valid():
             maintenance_record = form.save(commit=False)
             maintenance_record.asset = asset  # Ensure the asset is correctly set
-            if request.user.is_staff:  # If the user is staff (admin), they can choose the 'performed_by'
-                maintenance_record.performed_by = form.cleaned_data['performed_by']
+
             maintenance_record.save()
             messages.success(request, 'Maintenance record created successfully.')
             return redirect_when_next(request, 'view-asset', asset_id=asset.id)
     else:
-        form = MaintenanceHistoryForm(initial={'asset': asset})
-        if not request.user.is_staff:  # Set 'performed_by' to current user if not staff
-            form.fields['performed_by'].initial = request.user
+        form = MaintenanceHistoryForm(initial={'asset': asset}, user=request.user)
 
     return render(request, 'inventory/maintenance/create-maintenance.html', {
         'form': form,
         'asset': asset,
     })
+
 
 
 @login_required(login_url='login')
@@ -48,15 +46,15 @@ def update_maintenance(request, maintenance_id):
     maintenance = get_maintenance_by_id(maintenance_id)  # Utility function to fetch maintenance or return 404
 
     if request.method == 'POST':
-        form = MaintenanceHistoryForm(request.POST, instance=maintenance)
+        form = MaintenanceHistoryForm(request.POST, instance=maintenance, user=request.user)
         if not request.user.is_staff:  # Check if the user is not staff
-            form.fields['performed_by'].initial = request.user  # Set 'performed_by' to current user if not staff
+            form.fields['performed_by'].initial = maintenance.performed_by  # Set 'performed_by' to current user if not staff
         if form.is_valid():
             form.save()
             messages.success(request, 'Maintenance record updated successfully.')
             return redirect_when_next(request, 'view-asset', asset_id=maintenance.asset.id)
     else:
-        form = MaintenanceHistoryForm(instance=maintenance)
+        form = MaintenanceHistoryForm(instance=maintenance, user=request.user)
         if not request.user.is_staff:  # Set 'performed_by' to current user if not staff
             form.fields['performed_by'].initial = request.user
 

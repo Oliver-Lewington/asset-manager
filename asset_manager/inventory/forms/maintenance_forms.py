@@ -22,20 +22,20 @@ class MaintenanceHistoryForm(forms.ModelForm):
         label='Description (Optional)'
     )
 
-    # Make the asset field disabled (read-only) and set default for performed_by
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the user from kwargs and remove it from kwargs
         super().__init__(*args, **kwargs)
 
         # Disable the asset field
         if 'asset' in self.fields:
             self.fields['asset'].disabled = True
 
-        # Disable the performed_by field for non-admin users and add a help text
+        # Handle the 'performed_by' field for non-admin users
         if 'performed_by' in self.fields:
-            self.fields['performed_by'].disabled = True
-
-            # Add conditional help text if the user is not staff (admin)
-            if not kwargs.get('user', None) or not kwargs['user'].is_staff:
+            if not user or not user.is_staff:
+                # Set the 'performed_by' field to the current user if not admin
+                self.fields['performed_by'].initial = user
+                self.fields['performed_by'].disabled = True  # Disable the field for non-admins
                 self.fields['performed_by'].help_text = (
-                    "You are unable to alter 'Performed By' field because you are not an admin."
+                    "You are unable to alter the 'Performed By' field because you are not an admin."
                 )
