@@ -27,11 +27,8 @@ cd asset-manager
 python -m venv venv
 
 # Activate the virtual environment
-# For Windows
-venv\Scripts\activate
-
-# For Linux/Mac
-source venv/bin/activate
+venv\Scripts\activate # For Windows
+source venv/bin/activate # For Linux/Mac
 
 # Install application dependencies
 pip install -r requirements.txt
