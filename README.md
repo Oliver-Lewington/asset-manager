@@ -2,31 +2,15 @@
 
 A streamlined web application designed to assist onsite service (OSS) teams in efficiently managing company assets such as laptops, printers, and desktops. This application enhances inventory tracking and assignment operations while ensuring simplicity and effectiveness.
 
----
-
 ## **Table of Contents**
 
 - [**Overview**](#overview)
-- [**Features**](#features)
 - [**Installation**](#installation)
 - [**License**](#license)
-
----
 
 ## **Overview**
 
 The Eviden Asset Manager is built using Django, following Agile methodologies to ensure robust and iterative development. This application caters to companies needing seamless management of IT assets and tracking their allocation to users.
-
----
-
-## **Features**
-
-- **Asset Management**: Track and manage laptops, desktops, printers, and other IT equipment.
-- **User Assignment**: Assign assets to employees efficiently.
-- **Maintenance Tracking**: Monitor and log maintenance activities.
-- **Role-Based Access**: Admin and technician roles with tailored functionalities.
-
----
 
 ## **Installation**
 
@@ -61,8 +45,6 @@ python manage.py runserver
 
 The application will be available at `http://127.0.0.1:8000/` by default.
 
----
-
 # License
 
 This project is licensed under the MIT License. See the full license text below:
@@ -76,5 +58,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
