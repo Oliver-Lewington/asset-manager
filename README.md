@@ -1,13 +1,34 @@
 # **Eviden Asset Manager**
 
-A brief description of what the project does and who it's for.
+A streamlined web application designed to assist onsite service (OSS) teams in efficiently managing company assets such as laptops, printers, and desktops. This application enhances inventory tracking and assignment operations while ensuring simplicity and effectiveness.
 
-### **Table of Contents**
+---
 
+## **Table of Contents**
+
+- [**Overview**](#overview)
+- [**Features**](#features)
 - [**Installation**](#installation)
 - [**License**](#license)
 
-# **Installation**
+---
+
+## **Overview**
+
+The Eviden Asset Manager is built using Django, following Agile methodologies to ensure robust and iterative development. This application caters to companies needing seamless management of IT assets and tracking their allocation to users.
+
+---
+
+## **Features**
+
+- **Asset Management**: Track and manage laptops, desktops, printers, and other IT equipment.
+- **User Assignment**: Assign assets to employees efficiently.
+- **Maintenance Tracking**: Monitor and log maintenance activities.
+- **Role-Based Access**: Admin and technician roles with tailored functionalities.
+
+---
+
+## **Installation**
 
 Follow these steps to set up the project locally:
 
@@ -22,14 +43,26 @@ cd asset-manager
 python -m venv venv
 
 # Activate the virtual environment
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+# For Windows
+venv\Scripts\activate
+
+# For Linux/Mac
+source venv/bin/activate
 
 # Install application dependencies
 pip install -r requirements.txt
 
-# Change Directory into asset-manager
+# Navigate to the application root "asset_manager"
+cd asset_manager
+
+# Run the Django development server
+python manage.py runserver
 ```
+
+The application will be available at `http://127.0.0.1:8000/` by default.
+
+---
+
 # License
 
 This project is licensed under the MIT License. See the full license text below:
