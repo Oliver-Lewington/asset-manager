@@ -1,4 +1,4 @@
-# **Eviden Asset Manager**
+# **Asset Manager**
 
 A streamlined web application designed to assist onsite service (OSS) teams in efficiently managing company assets such as laptops, printers, and desktops. This application enhances inventory tracking and assignment operations while ensuring simplicity and effectiveness.
 
@@ -10,7 +10,7 @@ A streamlined web application designed to assist onsite service (OSS) teams in e
 
 ## **Overview**
 
-The Eviden Asset Manager is built using Django, following Agile methodologies to ensure robust and iterative development. This application caters to companies needing seamless management of IT assets and tracking their allocation to users.
+This Asset Manager is built using Django, following Agile methodologies to ensure robust and iterative development. This application caters to companies needing seamless management of IT assets and tracking their allocation to users.
 
 ## **Installation**
 
