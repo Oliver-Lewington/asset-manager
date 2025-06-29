@@ -62,6 +62,6 @@ def get_recent_assets(number_of_days):
     Returns a list of assets assigned within the past month, ordered by the most recent first.
     """
     one_month_ago = datetime.today() - timedelta(days=number_of_days)  # Set the range to the last month
-    return Asset.objects.filter(date_assigned__gte=one_month_ago).order_by('-last_updated')
+    return Asset.objects.filter(last_updated__gte=one_month_ago).order_by('-last_updated')
 
 
