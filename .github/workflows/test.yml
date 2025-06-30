@@ -11,10 +11,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./asset_manager
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
