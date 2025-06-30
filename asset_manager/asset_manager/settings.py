@@ -12,20 +12,22 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url  # install this package with: pip install dj-database-url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!)r7$*xy3c2-f-mi*27d*pe&$%c0m)lszsmuo+$g92x7s8us&p'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!)r7$*xy3c2-f-mi*27d*pe&$%c0m)lszsmuo+$g92x7s8us&p')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS - space or comma separated in env, converted to list here
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1')
+ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.replace(',', ' ').split() if host.strip()]
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -35,22 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Other apps...
     'inventory',
-    'crispy_forms', 'crispy_bootstrap5', # Django Forms Widget Pack.
+    'crispy_forms', 'crispy_bootstrap5',  # Django Forms Widget Pack.
 ]
 
 # Crispy Forms Setup
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-# Protects against MIME-type sniffing
+
+# Security settings
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Prevents your site from being framed (Clickjacking protection)
 X_FRAME_OPTIONS = "DENY"
-
-# Enables basic XSS protection in some browsers (mostly legacy support)
 SECURE_BROWSER_XSS_FILTER = True
 
 MIDDLEWARE = [
@@ -68,7 +67,7 @@ ROOT_URLCONF = 'asset_manager.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # add template dirs here if any
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,20 +83,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'asset_manager.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# Database - configured from DATABASE_URL environment variable
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=False,  # Set to True if needed in production
+    )
 }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -113,32 +109,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Cache configuration, default to local memory but can be overridden
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": os.environ.get("CACHE_BACKEND", "django.core.cache.backends.locmem.LocMemCache"),
+        "LOCATION": os.environ.get("CACHE_LOCATION", "unique-snowflake"),
     }
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
