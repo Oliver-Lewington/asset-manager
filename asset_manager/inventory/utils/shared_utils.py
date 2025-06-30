@@ -1,5 +1,7 @@
 from django.shortcuts import redirect
 
+import hashlib
+
 # --- Redirection Helper Functions ---
 def redirect_when_next(request, default_url='/', **kwargs):
     """
@@ -8,3 +10,6 @@ def redirect_when_next(request, default_url='/', **kwargs):
     """
     next_url = request.GET.get('next', default_url)  # Default to given URL if 'next' not provided
     return redirect(next_url, **kwargs) if kwargs else redirect(next_url)
+
+def hash_username(username):
+    return hashlib.sha256(username.encode('utf-8')).hexdigest()

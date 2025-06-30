@@ -4,6 +4,11 @@ from django.forms.widgets import PasswordInput, TextInput
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+from ..utils.shared_utils import hash_username
+
+MAX_ATTEMPTS = 5
+LOCKOUT_TIME_MINUTES = 5
+
 class CreateUserForm(UserCreationForm):
     """
     Form to create a new user with optional admin privileges.
@@ -31,9 +36,8 @@ class CreateUserForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        # Set admin privileges if the user selected 'is_admin'
         if self.cleaned_data['is_admin']:
-            user.is_staff = True  # Grants admin privileges
+            user.is_staff = True
         if commit:
             user.save()
         return user
@@ -41,7 +45,7 @@ class CreateUserForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     """
-    Form to authenticate an existing user with custom error messages.
+    Form to authenticate an existing user with custom error messages and lockout logic.
     """
     username = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Enter your username'}),
@@ -54,21 +58,51 @@ class LoginForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Override default error messages
         self.error_messages = {
-            'invalid_login': "The username or password is incorrect. "
-                              "Remember, both the username and password are case-sensitive.",
-            'inactive': "Your account is inactive. Please contact support for assistance."
+            'invalid_login': (
+                f"The username or password you entered is incorrect. "
+                f"Please check your credentials and try again. "
+                f"Attempt {{attempts}} of {MAX_ATTEMPTS}.",
+            ),
+            'inactive': (
+                "Your account is currently inactive. "
+                "Please contact support if you believe this is an error."
+            ),
+            'locked': (
+                f"Your account has been temporarily locked due to too many failed login attempts. "
+                f"Please wait {LOCKOUT_TIME_MINUTES} minutes before trying again. "
+                "If you need immediate access, contact support."
+            ),
         }
 
     def clean(self):
-        username = self.cleaned_data.get('username', '').lower()
-        lockout_key = f"lockout_{username}"
+        username_input = self.cleaned_data.get('username', '').lower()
+        username_hash = hash_username(username_input)
+        lockout_key = f"lockout_{username_hash}"
+        attempt_key = f"login_attempts_{username_hash}"
+        attempts = cache.get(attempt_key, 0)
 
+        # Handle lockout
         if cache.get(lockout_key):
             raise forms.ValidationError(
-                "This account is temporarily locked due to too many failed login attempts. Try again in 5 minutes.",
-                code="account_locked"
+                [
+                    f"Your account is locked due to {MAX_ATTEMPTS} failed login attempts.",
+                    f"Please wait {LOCKOUT_TIME_MINUTES} minutes before trying again or contact support for assistance."
+                ],
+                code="locked"
             )
 
-        return super().clean()
+        try:
+            return super().clean()
+        except forms.ValidationError as e:
+            # Show all relevant info as separate bullet points
+            if e.code == 'invalid_login':
+                raise forms.ValidationError(
+                    [
+                        f"The username or password you entered is incorrect. Attempt {attempts} of {MAX_ATTEMPTS}.",
+                        "Note: Both fields are case-sensitive.",
+                        f"After {MAX_ATTEMPTS} failed attempts, your account will be temporarily locked for {LOCKOUT_TIME_MINUTES} minutes."
+                    ],
+                    code="invalid_login"
+                )
+            raise

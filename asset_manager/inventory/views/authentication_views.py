@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.cache import cache
 
-import os
-import hashlib
+from ..utils.shared_utils import hash_username
 from ..forms.authentication_forms import LoginForm, CreateUserForm
 
 MAX_ATTEMPTS = 5
@@ -41,47 +40,33 @@ def register(request):
     context = {'form': form}
     return render(request, 'inventory/authentication/register.html', context)
 
-def hash_username(username):
-    return hashlib.sha256(username.encode('utf-8')).hexdigest()
-
 def login(request):
-    """
-    Handle user login.
-    - Display a login form.
-    - Authenticate and log in the user if credentials are valid.
-    - Redirect to the dashboard upon successful login.
-    """
     form = LoginForm(request, data=request.POST or None)
 
     if request.method == "POST":
-        raw_username = request.POST.get("username", "").strip().lower()
-        hashed_username = hash_username(raw_username)
+        username = hash_username(request.POST.get("username", "").strip().lower())
+        lockout_key = f"lockout_{username}"
+        attempt_key = f"login_attempts_{username}"
+        
+        # If form is invalid (invalid credentials)
+        attempts = cache.get(attempt_key, 0) + 1
+        cache.set(attempt_key, attempts, timeout=LOCKOUT_TIME)
 
-        lockout_key = f"lockout_{hashed_username}"
-        attempt_key = f"login_attempts_{hashed_username}"
-
-        # Debug logging for keys (remove in production)
-        print(f"Using cache keys: {lockout_key}, {attempt_key}")
-
-        if os.environ.get("DJANGO_ENV") != "test" and cache.get(lockout_key):
-            messages.error(request, "Too many failed attempts. Your account is locked for 5 minutes.")
+        # Check if the user is currently locked out
+        if cache.get(lockout_key):
             return render(request, "inventory/authentication/login.html", {"form": form})
 
         if form.is_valid():
+            # Even if credentials are correct, still enforce lockout
+            # This block only runs if NOT locked out
             user = form.get_user()
             cache.delete(attempt_key)
             auth_login(request, user)
             messages.success(request, f"Welcome back, {user.username.title()}!")
             return redirect("")  # Your dashboard or home
-
-        attempts = cache.get(attempt_key, 0) + 1
-        cache.set(attempt_key, attempts, timeout=LOCKOUT_TIME)
-
-        if attempts >= MAX_ATTEMPTS:
+        elif attempts >= MAX_ATTEMPTS:         
             cache.set(lockout_key, True, timeout=LOCKOUT_TIME)
-            messages.error(request, "Too many failed login attempts. Your account is locked for 5 minutes.")
-        else:
-            messages.error(request, f"Invalid credentials. Attempt {attempts} of {MAX_ATTEMPTS}.")
+            return render(request, "inventory/authentication/login.html", {"form": form})
 
     return render(request, "inventory/authentication/login.html", {"form": form})
 
