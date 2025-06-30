@@ -9,6 +9,7 @@ crispy-bootstrap5==2024.10
 dj-database-url==3.0.0
 Django==5.1.4
 django-crispy-forms==2.3
+gunicorn==23.0.0
 idna==3.10
 iniconfig==2.1.0
 packaging==25.0
