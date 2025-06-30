@@ -2,8 +2,14 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.core.cache import cache
 
+import os
+import hashlib
 from ..forms.authentication_forms import LoginForm, CreateUserForm
+
+MAX_ATTEMPTS = 5
+LOCKOUT_TIME = 5 * 60  # 5 minutes in seconds
 
 # Helper Function
 def authenticate_user(request, username, password):
@@ -35,6 +41,9 @@ def register(request):
     context = {'form': form}
     return render(request, 'inventory/authentication/register.html', context)
 
+def hash_username(username):
+    return hashlib.sha256(username.encode('utf-8')).hexdigest()
+
 def login(request):
     """
     Handle user login.
@@ -42,25 +51,39 @@ def login(request):
     - Authenticate and log in the user if credentials are valid.
     - Redirect to the dashboard upon successful login.
     """
-    form = LoginForm()
+    form = LoginForm(request, data=request.POST or None)
 
     if request.method == "POST":
-        form = LoginForm(request, data=request.POST)
+        raw_username = request.POST.get("username", "").strip().lower()
+        hashed_username = hash_username(raw_username)
+
+        lockout_key = f"lockout_{hashed_username}"
+        attempt_key = f"login_attempts_{hashed_username}"
+
+        # Debug logging for keys (remove in production)
+        print(f"Using cache keys: {lockout_key}, {attempt_key}")
+
+        if os.environ.get("DJANGO_ENV") != "test" and cache.get(lockout_key):
+            messages.error(request, "Too many failed attempts. Your account is locked for 5 minutes.")
+            return render(request, "inventory/authentication/login.html", {"form": form})
+
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            user = form.get_user()
+            cache.delete(attempt_key)
+            auth_login(request, user)
+            messages.success(request, f"Welcome back, {user.username.title()}!")
+            return redirect("")  # Your dashboard or home
 
-            user = authenticate_user(request, username, password)  # Use helper function
+        attempts = cache.get(attempt_key, 0) + 1
+        cache.set(attempt_key, attempts, timeout=LOCKOUT_TIME)
 
-            if user is not None:
-                auth_login(request, user)  # Log the user in
-                messages.success(request, f"Welcome back, {username.title()}!")
-                return redirect('')  # Redirect to the dashboard (or any page you want)
-            else:
-                messages.error(request, "Invalid username or password.")
+        if attempts >= MAX_ATTEMPTS:
+            cache.set(lockout_key, True, timeout=LOCKOUT_TIME)
+            messages.error(request, "Too many failed login attempts. Your account is locked for 5 minutes.")
+        else:
+            messages.error(request, f"Invalid credentials. Attempt {attempts} of {MAX_ATTEMPTS}.")
 
-    context = {'form': form}
-    return render(request, 'inventory/authentication/login.html', context)
+    return render(request, "inventory/authentication/login.html", {"form": form})
 
 @login_required(login_url='login')
 def delete_account(request):

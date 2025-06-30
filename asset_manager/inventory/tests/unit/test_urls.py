@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from ..models import Customer, Asset, MaintenanceHistory
+from inventory.models import Customer, Asset, MaintenanceHistory
 
 class TestUrls(TestCase):
     def setUp(self):
