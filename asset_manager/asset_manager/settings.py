@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 # ALLOWED_HOSTS - space or comma separated in env, converted to list here
-allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
+allowed_hosts_env = os.environ.get("ALLOWED_HOSTS", "")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.replace(',', ' ').split() if host.strip()]
 
 
