@@ -28,8 +28,7 @@ jobs:
       - name: Cache venv
         uses: actions/cache@v3
         with:
-          path: |
-            ./venv
+          path: ./venv
           key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
@@ -39,12 +38,20 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v3
-
       - name: Restore venv
         uses: actions/cache@v3
         with:
           path: ./venv
           key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv exists
+        run: |
+          if [ ! -f ../venv/bin/activate ]; then
+            python -m venv ../venv
+            source ../venv/bin/activate
+            pip install -r ../requirements.txt
+          fi
+        working-directory: ./asset_manager
 
       - name: Run migrations
         working-directory: ./asset_manager
@@ -57,12 +64,20 @@ jobs:
     needs: migrations
     steps:
       - uses: actions/checkout@v3
-
       - name: Restore venv
         uses: actions/cache@v3
         with:
           path: ./venv
           key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv exists
+        run: |
+          if [ ! -f ../venv/bin/activate ]; then
+            python -m venv ../venv
+            source ../venv/bin/activate
+            pip install -r ../requirements.txt
+          fi
+        working-directory: ./asset_manager
 
       - name: Run unit tests
         working-directory: ./asset_manager
@@ -75,12 +90,20 @@ jobs:
     needs: unit-tests
     steps:
       - uses: actions/checkout@v3
-
       - name: Restore venv
         uses: actions/cache@v3
         with:
           path: ./venv
           key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv exists
+        run: |
+          if [ ! -f ../venv/bin/activate ]; then
+            python -m venv ../venv
+            source ../venv/bin/activate
+            pip install -r ../requirements.txt
+          fi
+        working-directory: ./asset_manager
 
       - name: Run SQL injection tests
         working-directory: ./asset_manager
@@ -89,8 +112,9 @@ jobs:
           python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_user(username='testuser', password='testpassword')"
           nohup python manage.py runserver 0.0.0.0:8000 &
           sleep 5
-          python test/sqlmap/sqlmap-test.py
+          python inventory/tests/security/sqlmap-test.py
         env:
           DJANGO_ENV: test
           SQLMAP_TEST_USERNAME: ${{ secrets.SQLMAP_TEST_USERNAME }}
           SQLMAP_TEST_PASSWORD: ${{ secrets.SQLMAP_TEST_PASSWORD }}
+          
