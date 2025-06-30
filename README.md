@@ -34,7 +34,7 @@ source venv/bin/activate # For Linux/Mac
 pip install -r requirements.txt
 
 # Run the Django development server
-python manage.py runserver
+python -m gunicorn asset_manager.asgi:application -k uvicorn.workers.UvicornWorker
 ```
 
 The application will be available at `http://127.0.0.1:8000/` by default.

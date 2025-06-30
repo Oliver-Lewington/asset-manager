@@ -17,6 +17,8 @@ import dj_database_url  # install this package with: pip install dj-database-url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+LOCKOUT_TIME = int(os.environ.get('LOCKOUT_TIME', 300))  # default 5 minutes in seconds
+MAX_ATTEMPTS = int(os.environ.get('MAX_ATTEMPTS', 5))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-for-testing')

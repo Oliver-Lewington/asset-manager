@@ -44,30 +44,20 @@ def login(request):
     form = LoginForm(request, data=request.POST or None)
 
     if request.method == "POST":
-        username = hash_username(request.POST.get("username", "").strip().lower())
-        lockout_key = f"lockout_{username}"
-        attempt_key = f"login_attempts_{username}"
-        
-        # If form is invalid (invalid credentials)
-        attempts = cache.get(attempt_key, 0) + 1
-        cache.set(attempt_key, attempts, timeout=LOCKOUT_TIME)
-
-        # Check if the user is currently locked out
-        if cache.get(lockout_key):
-            return render(request, "inventory/authentication/login.html", {"form": form})
-
-        if attempts >= MAX_ATTEMPTS:         
-            cache.set(lockout_key, True, timeout=LOCKOUT_TIME)
-            return render(request, "inventory/authentication/login.html", {"form": form})
-
         if form.is_valid():
             user = form.get_user()
+            username = hash_username(user.username.strip().lower())
+            attempt_key = f"login_attempts_{username}"
+
+            # Clear failed login attempts
             cache.delete(attempt_key)
+
             auth_login(request, user)
             messages.success(request, f"Welcome back, {user.username.title()}!")
-            return redirect("") 
+            return redirect("")
 
     return render(request, "inventory/authentication/login.html", {"form": form})
+
 
 @login_required(login_url='login')
 def delete_account(request):
