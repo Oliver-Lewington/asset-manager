@@ -1,8 +1,8 @@
 from django import forms
+from django.core.cache import cache
 from django.forms.widgets import PasswordInput, TextInput
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-
 
 class CreateUserForm(UserCreationForm):
     """
@@ -61,4 +61,14 @@ class LoginForm(AuthenticationForm):
             'inactive': "Your account is inactive. Please contact support for assistance."
         }
 
+    def clean(self):
+        username = self.cleaned_data.get('username', '').lower()
+        lockout_key = f"lockout_{username}"
 
+        if cache.get(lockout_key):
+            raise forms.ValidationError(
+                "This account is temporarily locked due to too many failed login attempts. Try again in 5 minutes.",
+                code="account_locked"
+            )
+
+        return super().clean()

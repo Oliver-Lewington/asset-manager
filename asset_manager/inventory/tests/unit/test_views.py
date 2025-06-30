@@ -2,9 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
-from ..models import Asset, MaintenanceHistory, Customer, User
-from datetime import date
 from django.contrib.auth.models import User
+from django.core.cache import cache
+
+from inventory.models import Asset, MaintenanceHistory, Customer, User
+from datetime import date
 
 User = get_user_model()
 
@@ -258,3 +260,88 @@ class MaintenanceViewsTestCase(TestCase):
         self.assertEqual(MaintenanceHistory.objects.count(), 0)  # One maintenance record should be deleted
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(str(messages[0]), "Maintenance record deleted successfully.")
+
+class AuthenticationViewsTestCase(TestCase):
+    def setUp(self):
+        self.username = "testuser"
+        self.password = "password123"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+
+    def test_register_view_get(self):
+        url = reverse('register')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'inventory/authentication/register.html')
+        self.assertIn('form', response.context)
+
+    def test_register_view_post_success(self):
+        url = reverse('register')
+        data = {
+            'username': 'newuser',
+            'password1': 'StrongPass123!',
+            'password2': 'StrongPass123!',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(User.objects.filter(username='newuser').exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("Welcome, Newuser!", str(messages[0]))
+
+    def test_register_view_already_authenticated(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('register')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("You have already logged in", str(messages[0]))
+
+    def test_login_view_get(self):
+        url = reverse('login')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'inventory/authentication/login.html')
+        self.assertIn('form', response.context)
+
+    def test_login_view_post_invalid(self):
+        cache.clear()  # Clear lockout/attempts before test
+        url = reverse('login')
+        data = {'username': self.username, 'password': 'wrongpass'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("Invalid credentials", str(messages[0]))
+
+    def test_login_view_post_invalid(self):
+        cache.clear()  # Clear lockout/attempts before test
+        url = reverse('login')
+        data = {'username': self.username, 'password': 'wrongpass'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("Invalid credentials", str(messages[0]))
+
+    def test_login_view_lockout(self):
+        url = reverse('login')
+        data = {'username': self.username, 'password': 'wrongpass'}
+        for _ in range(5):
+            self.client.post(url, data)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("locked for 5 minutes", str(messages[-1]))
+
+    def test_logout_view(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('logout')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("Logout successful!", str(messages[0]))
+
+    def test_delete_account_view_get(self):
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('delete-account')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'inventory/authentication/delete-account.html')
+        

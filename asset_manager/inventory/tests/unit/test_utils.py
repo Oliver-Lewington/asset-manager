@@ -3,10 +3,10 @@ from django.test import TestCase
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http import Http404
-from ..models import Asset, Customer, MaintenanceHistory
+from inventory.models import Asset, Customer, MaintenanceHistory
 
 # -- Asset Utils TestsCase --
-from ..utils.asset_utils import (
+from inventory.utils.asset_utils import (
     get_asset_by_id, get_filtered_assets, get_asset_metrics, get_asset_assignments,
     get_asset_counts, get_recent_assets
 )
@@ -66,7 +66,7 @@ class AssetUtilsTestCase(TestCase):
         self.assertIn(self.asset4, recent_assets)
 
 # -- Customer Utils TestsCase --
-from ..utils.customer_utils import (
+from inventory.utils.customer_utils import (
     get_customer_by_id, get_filtered_customers, get_customer_metrics
 )
 
@@ -100,7 +100,7 @@ class CustomerUtilsTestCase(TestCase):
         self.assertEqual(metrics['customers_without_assets'], 1)
 
 # -- Maintainance Utils TestsCase --
-from ..utils.maintenance_utils import (
+from inventory.utils.maintenance_utils import (
     get_maintenance_by_id, get_current_month_maintenance_data
     )
 
@@ -110,8 +110,8 @@ from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
-from ..models import Customer, Asset, MaintenanceHistory
-from ..utils.maintenance_utils import get_maintenance_by_id, get_current_month_maintenance_data
+from inventory.models import Customer, Asset, MaintenanceHistory
+from inventory.utils.maintenance_utils import get_maintenance_by_id, get_current_month_maintenance_data
 
 class MaintenanceUtilsTestCase(TestCase):
     def setUp(self):
