@@ -19,13 +19,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-for-testing')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 # ALLOWED_HOSTS - space or comma separated in env, converted to list here
-allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
+allowed_hosts_env = os.environ.get("ALLOWED_HOSTS", "*")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.replace(',', ' ').split() if host.strip()]
 
 
