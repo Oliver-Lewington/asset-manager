@@ -19,13 +19,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!)r7$*xy3c2-f-mi*27d*pe&$%c0m)lszsmuo+$g92x7s8us&p')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 # ALLOWED_HOSTS - space or comma separated in env, converted to list here
-allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1')
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.replace(',', ' ').split() if host.strip()]
 
 
