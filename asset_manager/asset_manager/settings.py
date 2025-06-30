@@ -22,14 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-!)r7$*xy3c2-f-mi*27d*pe&$%c0m)lszsmuo+$g92x7s8us&p'
 
-DJANGO_ENV = os.getenv("DJANGO_ENV", "development")
-
-if DJANGO_ENV == "test":
-    # disable login lockout here or any other test-specific overrides
-    LOCKOUT_ENABLED = False
-else:
-    LOCKOUT_ENABLED = True
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -122,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'auth-failure-cache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
     }
 }
 
