@@ -30,9 +30,6 @@ python -m venv venv
 venv\Scripts\activate # For Windows
 source venv/bin/activate # For Linux/Mac
 
-# Navigate to the application root "asset_manager"
-cd asset_manager
-
 # Install application dependencies
 pip install -r requirements.txt
 
