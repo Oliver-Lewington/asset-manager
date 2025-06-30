@@ -52,6 +52,14 @@ INSTALLED_APPS = [
 # Crispy Forms Setup
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+# Protects against MIME-type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Prevents your site from being framed (Clickjacking protection)
+X_FRAME_OPTIONS = "DENY"
+
+# Enables basic XSS protection in some browsers (mostly legacy support)
+SECURE_BROWSER_XSS_FILTER = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
