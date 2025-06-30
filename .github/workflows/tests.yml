@@ -1,6 +1,10 @@
 name: Django Tests
 
 on:
+  push:
+    branches:
+      - main
+
   pull_request:
 
 jobs:
@@ -45,5 +49,6 @@ jobs:
           python inventory/tests/security/sqlmap-test.py
         env:
           DJANGO_ENV: test
+          ALLOWED_HOSTS : '*'
           SQLMAP_TEST_USERNAME: ${{ secrets.SQLMAP_TEST_USERNAME }}
           SQLMAP_TEST_PASSWORD: ${{ secrets.SQLMAP_TEST_PASSWORD }}
