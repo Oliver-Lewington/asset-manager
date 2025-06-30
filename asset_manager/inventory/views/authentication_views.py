@@ -22,10 +22,10 @@ def register(request):
     - Validate and save user data.
     - Log in the user after successful registration.
     """
-    # If the user is already logged in, redirect to dashboard or home
+    # If the user is already logged in, redirect to dashboard
     if request.user.is_authenticated:
         messages.warning(request, "You have already logged in, redirecting you to the dashboard.")
-        return redirect('')  # Change 'dashboard' to the URL you want
+        return redirect('') 
 
     form = CreateUserForm()
 
@@ -56,17 +56,16 @@ def login(request):
         if cache.get(lockout_key):
             return render(request, "inventory/authentication/login.html", {"form": form})
 
+        if attempts >= MAX_ATTEMPTS:         
+            cache.set(lockout_key, True, timeout=LOCKOUT_TIME)
+            return render(request, "inventory/authentication/login.html", {"form": form})
+
         if form.is_valid():
-            # Even if credentials are correct, still enforce lockout
-            # This block only runs if NOT locked out
             user = form.get_user()
             cache.delete(attempt_key)
             auth_login(request, user)
             messages.success(request, f"Welcome back, {user.username.title()}!")
-            return redirect("")  # Your dashboard or home
-        elif attempts >= MAX_ATTEMPTS:         
-            cache.set(lockout_key, True, timeout=LOCKOUT_TIME)
-            return render(request, "inventory/authentication/login.html", {"form": form})
+            return redirect("") 
 
     return render(request, "inventory/authentication/login.html", {"form": form})
 
@@ -77,7 +76,7 @@ def delete_account(request):
         user = request.user
         user.delete()
         messages.success(request, "Your account has been successfully deleted, please register again if you would like to use the application.")
-        return redirect('login')  # Redirect to the login page or homepage
+        return redirect('login')  # Redirect to the login page
     
     return render(request, 'inventory/authentication/delete-account.html')  # Confirmation page
 

@@ -1,15 +1,18 @@
 annotated-types==0.7.0
 asgiref==3.8.1
 beautifulsoup4==4.13.4
+Brotli==1.1.0
 bs4==0.0.2
 certifi==2025.6.15
 charset-normalizer==3.4.2
+click==8.2.1
 coverage==7.9.1
 crispy-bootstrap5==2024.10
 dj-database-url==3.0.0
 Django==5.1.4
 django-crispy-forms==2.3
 gunicorn==23.0.0
+h11==0.16.0
 idna==3.10
 iniconfig==2.1.0
 packaging==25.0
@@ -27,3 +30,5 @@ sqlparse==0.5.3
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.5.0
+uvicorn==0.35.0
+whitenoise==6.9.0
