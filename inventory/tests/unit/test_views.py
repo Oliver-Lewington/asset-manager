@@ -13,7 +13,7 @@ User = get_user_model()
 class AssetViewsTestCase(TestCase):
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
         # Create a customer
         self.customer = Customer.objects.create(
             name='John Doe',
@@ -128,7 +128,7 @@ class AssetViewsTestCase(TestCase):
 class CustomerViewsTestCase(TestCase):
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
         # Create customers
         self.customer1 = Customer.objects.create(
             name='John Doe',
@@ -187,7 +187,7 @@ class CustomerViewsTestCase(TestCase):
 class MaintenanceViewsTestCase(TestCase):
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
         
         # Create a customer
         self.customer = Customer.objects.create(

@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 
 from ..forms.asset_forms import AssetForm
 from ..models import Asset, MaintenanceHistory
-from ..utils.shared_utils import redirect_when_next
+from ..utils.shared_utils import redirect_when_next, staff_required
 from ..utils.asset_utils import get_filtered_assets, get_asset_metrics, get_asset_by_id
 
 # View all records
@@ -102,6 +102,7 @@ def update_asset(request, asset_id):
 
 
 # Delete an asset
+@staff_required
 @login_required(login_url='login')
 def delete_asset(request, asset_id):
     """

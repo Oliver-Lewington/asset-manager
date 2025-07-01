@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .views import admin_views
 from .views import asset_views
 from .views import customer_views
 from .views import maintenance_views
@@ -9,6 +10,11 @@ from .views.dashboard_views import dashboard
 
 urlpatterns = [
     path('', dashboard, name=''),
+
+    # - Admin URLs
+    path('site-admin/', admin_views.view_users, name='view-users'),
+    path('site-admin/edit/<int:user_id>', admin_views.update_user, name='update-user'),
+    path('site-admin/delete/<int:user_id>/', admin_views.delete_user, name='delete-user'),
 
     # - Asset URLs
     path('assets/', asset_views.view_assets, name='view-assets'),

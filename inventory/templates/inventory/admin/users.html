@@ -1,0 +1,108 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #007bff 0%, #6610f2 100%);">
+            <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>User Management</h4>
+            <span class="badge bg-light text-primary fs-6">{{ users|length }} Users</span>
+        </div>
+        <div class="card-body px-4 py-3">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col"><i class="bi bi-person-circle"></i> Username</th>
+                            <th scope="col"><i class="bi bi-envelope"></i> Email</th>
+                            <th scope="col"><i class="bi bi-person-badge"></i> Admin</th>
+                            <th scope="col"><i class="bi bi-check-circle"></i> Active</th>
+                            <th scope="col"><i class="bi bi-clock-history"></i> Last Seen</th>
+                            <th scope="col"><i class="bi bi-gear"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="align-middle">
+                            <td class="fw-semibold">
+                                <i class="bi bi-person-fill text-primary me-1"></i>
+                                {{ user.username|default:"<span class='text-muted'>N/A</span>"|safe }}
+                                {% if user.is_superuser %}
+                                    <span class="badge bg-warning text-dark ms-2" data-bs-toggle="tooltip" title="Site owner"><i class="bi bi-star-fill"></i> Superuser</span>
+                                {% endif %}
+                                {% if user.id == request.user.id %}
+                                    <span class="badge bg-info text-dark ms-2" data-bs-toggle="tooltip" title="This is you">You</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.email %}
+                                    <span class="text-break">{{ user.email }}</span>
+                                {% else %}
+                                    <span class="text-muted fst-italic">No email</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_staff %}
+                                    <span class="badge bg-success" data-bs-toggle="tooltip" title="Staff User"><i class="bi bi-check-lg"></i> Yes</span>
+                                {% else %}
+                                    <span class="badge bg-secondary" data-bs-toggle="tooltip" title="Not Staff"><i class="bi bi-x-lg"></i> No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_active %}
+                                    <span class="badge bg-success" data-bs-toggle="tooltip" title="Active"><i class="bi bi-check-circle"></i> Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger" data-bs-toggle="tooltip" title="Inactive"><i class="bi bi-slash-circle"></i> Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.last_login %}
+                                    <span class="text-nowrap" data-bs-toggle="tooltip" title="{{ user.last_login|date:'Y-m-d H:i' }}">
+                                        {{ user.last_login|timesince }} ago
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted fst-italic">Never</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.user.is_superuser %}
+                                    <a href="{% url 'update-user' user.id %}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="Edit User">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                {% else %}
+                                    <a class="btn btn-sm btn-outline-primary me-1 disabled" tabindex="-1" aria-disabled="true" data-bs-toggle="tooltip" title="Only superusers can edit users">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                {% endif %}
+                                <form method="post" action="{% url 'delete-user' user.id %}" onsubmit="showConfirmation(event)" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm btn-outline-danger" {% if user.is_superuser or user.id == request.user.id %} disabled {% endif %} type="submit" data-bs-toggle="tooltip" title="Delete User">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-emoji-frown fs-2"></i><br>
+                                No users found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap 5 tooltips activation -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+{% endblock %}

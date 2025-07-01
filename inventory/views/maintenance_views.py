@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from ..forms.maintenance_forms import MaintenanceHistoryForm
 
 from ..utils.asset_utils import get_asset_by_id
-from ..utils.shared_utils import redirect_when_next
+from ..utils.shared_utils import redirect_when_next, staff_required
 from ..utils.maintenance_utils import get_maintenance_by_id
 
 @login_required(login_url='login')
@@ -65,6 +65,7 @@ def update_maintenance(request, maintenance_id):
 
 
 
+@staff_required
 @login_required(login_url='login')
 def delete_maintenance(request, maintenance_id):
     """

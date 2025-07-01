@@ -1,0 +1,112 @@
+{% extends "inventory/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow border-0">
+                <div class="card-header text-white d-flex align-items-center justify-content-between flex-wrap" style="background: linear-gradient(90deg, #6c757d 0%, #b0b8c1 100%);">
+                    <div class="d-flex align-items-center flex-wrap gap-2 w-100">
+                        <a class="text-white me-3" href="{% url 'view-users' %}" style="font-size: 1.5rem; font-weight: bold;">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                        <h4 class="mb-0 me-2 flex-grow-1" style="white-space:nowrap;">Edit User</h4>  
+                        {% if user.is_superuser %}
+                            <span class="badge bg-warning-subtle text-dark badge-user-header badge-sm"><i class="bi bi-star-fill"></i> Superuser</span>
+                        {% endif %}
+                        {% if user.is_staff %}
+                            <span class="badge bg-success-subtle text-dark badge-user-header badge-sm"><i class="bi bi-person-badge"></i> Staff</span>
+                        {% else %}
+                            <span class="badge bg-secondary-subtle text-dark badge-user-header badge-sm"><i class="bi bi-person"></i> Not Staff</span>
+                        {% endif %}
+                        <span class="badge bg-light-subtle text-primary fs-6 badge-user-header badge-sm ms-auto"><i class="bi bi-hash"></i>{{ user.id }}</span>
+                    </div>
+                </div>
+                <div class="card-body px-4 py-3">
+                    <div class="mb-3 text-center">
+                        <span class="badge bg-info-subtle text-dark badge-user-header badge-sm me-2">
+                            <i class="bi bi-envelope"></i>
+                            {{ user.email|default:"No email" }}
+                        </span>
+                        <span class="badge bg-light-subtle text-dark badge-user-header badge-sm me-2">
+                            <i class="bi bi-calendar"></i>
+                            Joined: {{ user.date_joined|date:"Y-m-d" }}
+                        </span>
+                        {% if user.last_login %}
+                            <span class="badge bg-primary-subtle text-dark badge-user-header badge-sm me-2">
+                                <i class="bi bi-clock-history"></i>
+                                Last seen: {{ user.last_login|date:"Y-m-d H:i" }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <hr>
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-start gap-2 mt-4">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
+                            {% if not user.is_superuser %}
+                            <form method="post" action="{% url 'delete-user' user.id %}" onsubmit="showConfirmation(event)" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </form>
+                    {% if messages %}
+                        <div class="mt-3">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.badge-user-header.badge-sm {
+    min-width: 90px;
+    font-size: 0.85rem;
+    padding: 0.25em 0.5em;
+}
+.card-header h4 {
+    margin-bottom: 0 !important;
+}
+.bg-warning-subtle {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+}
+.bg-success-subtle {
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+}
+.bg-secondary-subtle {
+    background-color: #e2e3e5 !important;
+    color: #41464b !important;
+}
+.bg-light-subtle {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+}
+.bg-info-subtle {
+    background-color: #cff4fc !important;
+    color: #055160 !important;
+}
+.bg-primary-subtle {
+    background-color: #cfe2ff !important;
+    color: #084298 !important;
+}
+</style>
+<!-- Bootstrap 5 tooltips activation -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+{% endblock %}
