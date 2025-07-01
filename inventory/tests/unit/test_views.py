@@ -1,4 +1,4 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
@@ -9,7 +9,7 @@ from inventory.models import Asset, MaintenanceHistory, Customer, User
 from datetime import date
 
 User = get_user_model()
-@override_settings(LOGIN_URL='/login/')
+
 class AssetViewsTestCase(TestCase):
     def setUp(self):
         # Create a user
@@ -98,12 +98,13 @@ class AssetViewsTestCase(TestCase):
         self.assertEqual(self.asset.status, Asset.StatusChoices.PENDING_MAINTENANCE)
 
     def test_delete_asset(self):
-        self.client.login(username='testuser', password='password')  # Ensure logged in
+        # Test deleting an asset
         url = reverse('delete-asset', args=[self.asset.id])
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(response.status_code, 302)  # Expecting a redirect
         self.assertRedirects(response, reverse('view-assets'))
-        self.assertEqual(Asset.objects.count(), 0)
+        self.assertEqual(Asset.objects.count(), 0)  # Asset should be deleted
 
     def test_pagination(self):
         # Test pagination for assets
@@ -124,11 +125,10 @@ class AssetViewsTestCase(TestCase):
         self.assertTrue(response.context['page_obj'].has_next())  # Check if pagination exists
         self.assertEqual(len(response.context['page_obj']), 5)  # 5 assets per page
 
-@override_settings(LOGIN_URL='/login/')
 class CustomerViewsTestCase(TestCase):
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
         # Create customers
         self.customer1 = Customer.objects.create(
             name='John Doe',
@@ -176,18 +176,18 @@ class CustomerViewsTestCase(TestCase):
         self.assertEqual(self.customer1.email, 'updatedcustomer@example.com')
 
     def test_delete_customer(self):
-        self.client.login(username='testuser', password='password')  # Ensure logged in
+        # Test deleting an existing customer
         url = reverse('delete-customer', args=[self.customer2.id])
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('view-customers'))
-        self.assertEqual(Customer.objects.count(), 1)
 
-@override_settings(LOGIN_URL='/login/')
+        self.assertEqual(response.status_code, 302)  # Expecting a redirect
+        self.assertRedirects(response, reverse('view-customers'))
+        self.assertEqual(Customer.objects.count(), 1)  # One customer should be deleted
+
 class MaintenanceViewsTestCase(TestCase):
     def setUp(self):
         # Create a user
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password', is_staff=True)
         
         # Create a customer
         self.customer = Customer.objects.create(
@@ -251,12 +251,15 @@ class MaintenanceViewsTestCase(TestCase):
         self.assertEqual(self.maintenance.description, 'Updated software to latest version')
 
     def test_delete_maintenance(self):
-        self.client.login(username='testuser', password='password')  # Ensure logged in
+        # Test deleting a maintenance record
         url = reverse('delete-maintenance', args=[self.maintenance.id])
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(response.status_code, 302)  # Expecting a redirect
         self.assertRedirects(response, reverse('view-asset', args=[self.asset.id]))
-        self.assertEqual(MaintenanceHistory.objects.count(), 0)
+        self.assertEqual(MaintenanceHistory.objects.count(), 0)  # One maintenance record should be deleted
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(str(messages[0]), "Maintenance record deleted successfully.")
 
 class AuthenticationViewsTestCase(TestCase):
     def setUp(self):
