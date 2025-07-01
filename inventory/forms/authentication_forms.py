@@ -16,16 +16,10 @@ class CreateUserForm(UserCreationForm):
     """
     Form to create a new user with optional admin privileges.
     """
-    is_admin = forms.BooleanField(
-        required=False,
-        initial=False,
-        label="Register as Administrator",
-        help_text="Checking this box will grant you admin privileges, enabling you to add, edit and delete customer, asset and maintenance records.",
-    )
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'is_admin']
+        fields = ['username', 'password1', 'password2']
         labels = {
             'username': 'Username',
             'password1': 'Password',
@@ -36,15 +30,6 @@ class CreateUserForm(UserCreationForm):
             'password1': PasswordInput(attrs={'placeholder': 'Enter a secure password'}),
             'password2': PasswordInput(attrs={'placeholder': 'Confirm your password'}),
         }
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        if self.cleaned_data['is_admin']:
-            user.is_staff = True
-        if commit:
-            user.save()
-        return user
-
 
 class LoginForm(AuthenticationForm):
     """

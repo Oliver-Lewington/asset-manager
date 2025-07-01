@@ -7,9 +7,10 @@ from django.shortcuts import render, get_object_or_404
 from ..models import Asset, Customer
 from ..forms.customer_forms import CustomerForm
 
-from ..utils.shared_utils import redirect_when_next
+from ..utils.shared_utils import redirect_when_next, staff_required
 from ..utils.asset_utils import get_asset_assignments
 from ..utils.customer_utils import get_filtered_customers, get_customer_metrics
+
 # View all records
 @login_required(login_url='login')
 def view_customers(request):
@@ -43,8 +44,6 @@ def view_customers(request):
 
     return render(request, 'inventory/customer/customers.html', context)
 
-
-
 # View a single customer record
 @login_required(login_url='login')
 def view_customer(request, customer_id):
@@ -65,7 +64,6 @@ def view_customer(request, customer_id):
         'assigned_assets': assigned_assets,  # Pass the assigned assets to the template
     })
 
-
 # Create a new customer
 @login_required(login_url='login')
 def create_customer(request):
@@ -83,7 +81,6 @@ def create_customer(request):
             return redirect_when_next(request,'view-customers')
 
     return render(request, 'inventory/customer/create-customer.html', {'form': form})
-
 
 # Update an existing customer
 @login_required(login_url='login')
@@ -104,8 +101,8 @@ def update_customer(request, customer_id):
 
     return render(request, 'inventory/customer/update-customer.html', {'form': form, 'customer_id': customer.id})
 
-
 # Delete a customer
+@staff_required
 @login_required(login_url='login')
 def delete_customer(request, customer_id):
     """

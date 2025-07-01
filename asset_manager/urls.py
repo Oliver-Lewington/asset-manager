@@ -17,10 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.static import static
+from django.http import HttpResponseNotFound
+
+def admin_disabled(request):
+    return HttpResponseNotFound("Admin is disabled in production.")
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('inventory.urls')),
-    
 ]
+
+if settings.DEBUG:
+    urlpatterns += [path('admin/', admin.site.urls)]
+else:
+    urlpatterns += [path('admin/', admin_disabled)]

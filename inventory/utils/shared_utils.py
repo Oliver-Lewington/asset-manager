@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import user_passes_test
 
 import hashlib
 
@@ -13,3 +14,6 @@ def redirect_when_next(request, default_url='/', **kwargs):
 
 def hash_username(username):
     return hashlib.sha256(username.encode('utf-8')).hexdigest()
+
+def staff_required(view_func):
+    return user_passes_test(lambda u: u.is_active and u.is_staff)(view_func)
