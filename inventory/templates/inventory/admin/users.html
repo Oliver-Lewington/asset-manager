@@ -1,5 +1,6 @@
 {% extends "inventory/base.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <div class="container py-4">
@@ -58,7 +59,8 @@
                             <td>
                                 {% if user.last_login %}
                                     <span class="text-nowrap" data-bs-toggle="tooltip" title="{{ user.last_login|date:'Y-m-d H:i' }}">
-                                        {{ user.last_login|timesince }} ago
+                                        <i class="bi bi-clock-history me-1"></i>
+                                        {{ user.last_login|naturaltime|capfirst }}
                                     </span>
                                 {% else %}
                                     <span class="text-muted fst-italic">Never</span>

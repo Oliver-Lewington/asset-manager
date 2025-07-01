@@ -64,7 +64,7 @@ def delete_account(request):
     if request.method == "POST":
         # Delete the current user's account
         user = request.user
-        user.delete()
+        user.delete()  # This will delete the user and all related data
         messages.success(request, "Your account has been successfully deleted, please register again if you would like to use the application.")
         return redirect('login')  # Redirect to the login page
     
