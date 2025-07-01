@@ -7,7 +7,7 @@ __pycache__/
 *.log
 *.pot
 *.pyc
-db.sqlite3
+# db.sqlite3 -- We don't want to ignore this file as we require it for faking data.
 /staticfiles/
 
 # Environment
