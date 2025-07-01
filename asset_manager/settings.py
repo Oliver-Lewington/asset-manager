@@ -120,13 +120,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Cache configuration, default to local memory but can be overridden
-CACHES = {
-    "default": {
-        "BACKEND": os.environ.get("CACHE_BACKEND", "django.core.cache.backends.locmem.LocMemCache"),
-        "LOCATION": os.environ.get("CACHE_LOCATION", "unique-snowflake"),
+if os.environ.get("REDIS_URL"):
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ["REDIS_URL"],
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
