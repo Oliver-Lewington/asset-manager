@@ -30,6 +30,8 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 allowed_hosts_env = os.environ.get("ALLOWED_HOSTS", "*")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.replace(',', ' ').split() if host.strip()]
 
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = ''
 
 # Application definition
 INSTALLED_APPS = [
