@@ -33,7 +33,7 @@ class CreateUserForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     """
-    Form to authenticate an existing user with custom error messages and lockout logic.
+    Form to authenticate an existing user with custom error messages.
     """
     username = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Enter your username'}),
@@ -48,56 +48,11 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         self.error_messages = {
             'invalid_login': (
-                f"The username or password you entered is incorrect. "
-                f"Please check your credentials and try again. "
-                f"Attempt {{attempts}} of {MAX_ATTEMPTS}."
+                "The username or password you entered is incorrect. "
+                "Please check your credentials and try again."
             ),
             'inactive': (
                 "Your account is currently inactive. "
                 "Please contact support if you believe this is an error."
             ),
-            'locked': (
-                f"Your account has been temporarily locked due to too many failed login attempts. "
-                f"Please wait {LOCKOUT_TIME_MINUTES} minutes before trying again. "
-                "If you need immediate access, contact support."
-            ),
         }
-
-    def clean(self):
-        username_input = self.cleaned_data.get('username', '').lower()
-        username_hash = hash_username(username_input)
-        lockout_key = f"lockout_{username_hash}"
-        attempt_key = f"login_attempts_{username_hash}"
-
-        # Check if the user is currently locked out
-        if cache.get(lockout_key):
-            raise forms.ValidationError(
-                {'__all__': [self.error_messages['locked']]},
-                code="locked"
-            )
-
-        try:
-            return super().clean()
-        except forms.ValidationError as e:
-            # Increment login attempts on failure
-            attempts = cache.get(attempt_key, 0) + 1
-            cache.set(attempt_key, attempts, timeout=LOCKOUT_TIME)
-
-            # Lock the account if max attempts reached
-            if attempts >= MAX_ATTEMPTS:
-                cache.set(lockout_key, True, timeout=LOCKOUT_TIME)
-
-            # Customize error message for invalid login
-            if e.code == 'invalid_login':
-                raise forms.ValidationError(
-                    {'__all__': [
-                        self.error_messages['invalid_login'].format(attempts=attempts),
-                        "Note: Both fields are case-sensitive.",
-                        (
-                            f"After {MAX_ATTEMPTS} failed attempts, your account will be temporarily "
-                            f"locked for {LOCKOUT_TIME_MINUTES} minutes."
-                        )
-                    ]},
-                    code="invalid_login"
-                )
-            raise
